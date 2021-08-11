@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="col-md-10" align="center">
+        <h1>404</h1>
+        <h3 th:text="${message}">Not found</h3>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

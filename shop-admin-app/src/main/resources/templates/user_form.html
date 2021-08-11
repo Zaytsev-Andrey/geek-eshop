@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="row py-2">
+            <div class="col-12">
+                <form th:action="@{/user}" method="post" th:object="${userDto}">
+                    <input type="hidden" id="id" th:field="*{id}">
+                    <div class="form-group">
+                        <label>Firstname</label>
+                        <input type="text" class="form-control" id="firstname" th:field="*{firstname}" placeholder="Enter Firstname">
+                        <p class="text-danger" th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}"></p>
+
+                        <label>Lastname</label>
+                        <input type="text" class="form-control" id="lastname" th:field="*{lastname}" placeholder="Enter Lastname">
+                        <p class="text-danger" th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}"></p>
+
+                        <label>E-mail</label>
+                        <input type="text" class="form-control" id="email" th:field="*{email}" placeholder="Enter E-mail">
+                        <p class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+                        <label>Password</label>
+                        <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password">
+                        <p class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" placeholder="Enter confirm password">
+                        <p class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{confirmPassword}"></p>
+
+                        <label for="rolesDto">Roles</label>
+                        <select multiple class="form-control" id="rolesDto" th:field="*{rolesDto}" required>
+                            <option th:each="r : ${roles}"
+                                    th:text="${r.role}"
+                                    th:value="${r.id} + ';' + ${r.role}"
+                                    th:selected="${userDto.rolesDto?.contains(r)}"></option>
+                        </select>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

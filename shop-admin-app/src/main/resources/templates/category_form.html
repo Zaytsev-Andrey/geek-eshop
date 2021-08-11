@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="row py-2">
+            <div class="col-12">
+                <form th:action="@{/category}" method="post" th:object="${categoryDto}">
+                    <input type="hidden" id="id" th:field="*{id}">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="Enter title">
+                        <p class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

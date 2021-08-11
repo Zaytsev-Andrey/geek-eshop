@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="col-12">
+            <a class="btn btn-primary" th:href="@{/user/new}">Add User</a>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form class="form-inline" th:method="get">
+                <div class="form-group mb-2 mr-2">
+                    <label for="firstnameFilter" class="sr-only">Firstname</label>
+                    <input type="text" class="form-control" id="firstnameFilter" name="firstnameFilter"
+                           th:value="${param.firstnameFilter}" placeholder="Firstname">
+
+                    <label for="lastnameFilter" class="sr-only">Lastname</label>
+                    <input type="text" class="form-control" id="lastnameFilter" name="lastnameFilter"
+                           th:value="${param.lastnameFilter}" placeholder="Lastname">
+
+                    <label for="emailFilter" class="sr-only">E-mail</label>
+                    <input type="text" class="form-control" id="emailFilter" name="emailFilter"
+                           th:value="${param.emailFilter}" placeholder="E-mail">
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-2">Apply</button>
+            </form>
+        </div>
+
+        <div class="col-12">
+            <table class="table table-bordered my-2">
+                <thead>
+                <tr>
+                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('Firstname', 'firstname')">Title</th>
+                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('Lastname', 'lastname')">Title</th>
+                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('E-mail', 'email')">Title</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${users.hasContent()}" th:each="user : ${users.content}">
+                    <th scope="row" th:text="${user.id}">1</th>
+                    <td th:text="${user.firstname}">firstname</td>
+                    <td th:text="${user.lastname}">lastname</td>
+                    <td th:text="${user.email}">email</td>
+                    <td>
+                        <a class="btn btn-success" th:href="@{/user/{id}(id=${user.id})}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form class="d-inline" th:method="delete" th:action="@{/user/{id}(id=${user.id})}">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:unless="${users.hasContent()}">
+                    <td colspan="4">No data</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="..." th:if="${users.hasContent()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!users.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/user(page=${users.number}, size=${users.size},
+                    firstnameFilter=${param.firstnameFilter}, lastnameFilter=${param.lastnameFilter},
+                    emailFilter=${param.emailFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="num : ${#numbers.sequence(1, (users.totalPages == 0 ? 1 : users.totalPages))}"
+                    th:classappend="${num == users.number + 1} ? 'active'">
+                    <a class="page-link" th:text="${num}"
+                       th:href="@{/user(page=${users.totalPages == 0 ? 1 : num},
+                       size=${users.size}, firstnameFilter=${param.firstnameFilter},
+                       lastnameFilter=${param.lastnameFilter}, emailFilter=${param.emailFilter},
+                       sortField=${param.sortField},
+                       sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="page-item" th:classappend="${!users.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/user(page=${users.number} + 2, size=${users.size},
+                    firstnameFilter=${param.firstnameFilter}, lastnameFilter=${param.lastnameFilter},
+                    emailFilter=${param.emailFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

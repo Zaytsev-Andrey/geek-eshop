@@ -1,0 +1,14 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="doc_nav_menu()" class="sidebar bg-dark">
+    <ul class="list-unstyled">
+        <li>
+            <a href="#submenu1" data-toggle="collapse"><i class="fa fa-fw fa-address-card"></i> Persist</a>
+            <ul id="submenu1" class="list-unstyled collapse">
+                <li><a th:href="@{/product}">Products</a></li>
+                <li><a th:href="@{/category}">Product categories</a></li>
+                <li><a th:href="@{/user}">Users</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+</html>

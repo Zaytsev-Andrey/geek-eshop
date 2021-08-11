@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex justify-content-center mt-3">
+            <div class="col-md-4">
+                <form th:action="@{/login}" method="post" sec:authorize="isAnonymous()">
+                    <div class="form-group">
+                        <p class="text-danger" th:if="${param.error != null}">Incorrect login or password</p>
+                        <p class="text-success" th:if="${param.logout != null}">Logout successful</p>
+                        <label>E-mail</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter E-mail">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <p class="text-success" sec:authorize="isAuthenticated()">
+                    <span sec:authentication="principal.username"></span> is authenticated
+                </p>
+            </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>
