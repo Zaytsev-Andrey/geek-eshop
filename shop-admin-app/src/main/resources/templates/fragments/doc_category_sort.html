@@ -1,0 +1,10 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th scope="col" th:fragment="sort_header(header, column)">[[${header}]]
+    <a th:href="@{/category(page=${categories.number} + 1, size=${categories.size},
+                    titleFilter=${param.titleFilter}, sortField=${column},
+                    sortDirection=(${#strings.equals(param.sortField, column)} and
+                            ${#strings.equals(param.sortDirection, 'asc')}) ? 'desc' : 'asc')}">
+    <i class="fa" th:classappend="(${#strings.equals(param.sortDirection, 'desc')} and
+                ${#strings.equals(param.sortField, column)}) ? 'fa-sort-up': 'fa-sort-down'"></i></a>
+</th>
+</html>

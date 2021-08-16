@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="col-12">
+            <a class="btn btn-primary" th:href="@{/category/new}">Add Category</a>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form class="form-inline" th:method="get">
+                <div class="form-group mb-2 mr-2">
+                    <label for="titleFilter" class="sr-only">Title</label>
+                    <input type="text" class="form-control" id="titleFilter" name="titleFilter"
+                           th:value="${param.titleFilter}" placeholder="Title">
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-2">Apply</button>
+            </form>
+        </div>
+
+        <div class="col-12">
+            <table class="table table-bordered my-2">
+                <thead>
+                <tr>
+                    <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('Title', 'title')">Title</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${categories.hasContent()}" th:each="category : ${categories.content}">
+                    <th scope="row" th:text="${category.id}">1</th>
+                    <td th:text="${category.title}">title</td>
+                    <td>
+                        <a class="btn btn-success" th:href="@{/category/{id}(id=${category.id})}"><i class="fas fa-edit"></i></a>
+                        <form class="d-inline" th:method="delete" th:action="@{/category/{id}(id=${category.id})}">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:unless="${categories.hasContent()}">
+                    <td colspan="4">No data</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="..." th:if="${categories.hasContent()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!categories.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/category(page=${categories.number}, size=${categories.size},
+                    titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="num : ${#numbers.sequence(1, (categories.totalPages == 0 ? 1 : categories.totalPages))}"
+                    th:classappend="${num == categories.number + 1} ? 'active'">
+                    <a class="page-link" th:text="${num}"
+                       th:href="@{/category(page=${categories.totalPages == 0 ? 1 : num},
+                       size=${categories.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                       sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="page-item" th:classappend="${!categories.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/category(page=${categories.number} + 2, size=${categories.size},
+                    titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

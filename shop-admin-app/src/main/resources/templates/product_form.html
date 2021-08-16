@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="row py-2">
+            <div class="col-12">
+                <form th:action="@{/product}" method="post" th:object="${productDto}">
+                    <input type="hidden" id="id" th:field="*{id}">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="Enter title">
+                        <p class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+
+                        <label for="categoryDto">Category</label>
+                        <select class="form-control" id="categoryDto" th:field="*{categoryDto}">
+                            <option th:each="cat : ${categories}"
+                                    th:text="${cat.title}"
+                                    th:value="${cat.id} + ';' + ${cat.title}"
+                                    th:selected="${productDto.categoryDto?.equals(cat)}"></option>
+                        </select>
+
+                        <label>Cost</label>
+                        <input type="number" class="form-control" id="cost" th:field="*{cost}" placeholder="Enter cost">
+                        <p class="text-danger" th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}"></p>
+
+                        <label>Description</label>
+                        <textarea type="text" class="form-control" id="description" th:field="*{description}"
+                                  placeholder="Enter description"></textarea>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>
