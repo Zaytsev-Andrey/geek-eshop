@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/doc_header :: doc_header()">
+
+</head>
+<body>
+
+<nav th:replace="fragments/doc_nav_bar :: doc_nav_bar()">
+
+</nav>
+
+<div class="d-flex">
+    <nav th:replace="fragments/doc_nav_menu :: doc_nav_menu()">
+
+    </nav>
+
+    <div class="content p-4">
+        <div class="col-12">
+            <a class="btn btn-primary" th:href="@{/brand/new}">Add Brand</a>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form class="form-inline" th:method="get">
+                <div class="form-group mb-2 mr-2">
+                    <label for="titleFilter" class="sr-only">Title</label>
+                    <input type="text" class="form-control" id="titleFilter" name="titleFilter"
+                           th:value="${param.titleFilter}" placeholder="Title">
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-2">Apply</button>
+            </form>
+        </div>
+
+        <div class="col-12">
+            <table class="table table-bordered my-2">
+                <thead>
+                <tr>
+                    <th scope="col" th:replace="fragments/doc_brand_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col" th:replace="fragments/doc_brand_sort :: sort_header('Title', 'title')">Title</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${brands.hasContent()}" th:each="brand : ${brands.content}">
+                    <th scope="row" th:text="${brand.id}">1</th>
+                    <td th:text="${brand.title}">title</td>
+                    <td>
+                        <a class="btn btn-success" th:href="@{/brand/{id}(id=${brand.id})}"><i class="fas fa-edit"></i></a>
+                        <form class="d-inline" th:method="delete" th:action="@{/brand/{id}(id=${brand.id})}">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:unless="${brands.hasContent()}">
+                    <td colspan="4">No data</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="..." th:if="${brands.hasContent()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!brands.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/brand(page=${brands.number}, size=${brands.size},
+                    titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="num : ${#numbers.sequence(1, (brands.totalPages == 0 ? 1 : brands.totalPages))}"
+                    th:classappend="${num == brands.number + 1} ? 'active'">
+                    <a class="page-link" th:text="${num}"
+                       th:href="@{/brand(page=${brands.totalPages == 0 ? 1 : num},
+                       size=${brands.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                       sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="page-item" th:classappend="${!brands.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/brand(page=${brands.number} + 2, size=${brands.size},
+                    titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                    sortDirection=${param.sortDirection})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<th:block th:replace="fragments/doc_script :: doc_script()">
+
+</th:block>
+
+</body>
+</html>

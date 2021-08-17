@@ -32,6 +32,14 @@
                                     th:selected="${productDto.categoryDto?.equals(cat)}"></option>
                         </select>
 
+                        <label for="brandDto">Category</label>
+                        <select class="form-control" id="brandDto" th:field="*{brandDto}">
+                            <option th:each="br : ${brands}"
+                                    th:text="${br.title}"
+                                    th:value="${br.id} + ';' + ${br.title}"
+                                    th:selected="${productDto.categoryDto?.equals(br)}"></option>
+                        </select>
+
                         <label>Cost</label>
                         <input type="number" class="form-control" id="cost" th:field="*{cost}" placeholder="Enter cost">
                         <p class="text-danger" th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}"></p>

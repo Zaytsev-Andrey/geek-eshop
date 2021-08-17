@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.controller.CategoryDto;
 import ru.geekbrains.controller.CategoryListParam;
-import ru.geekbrains.persist.Category;
+import ru.geekbrains.persist.model.Category;
 import ru.geekbrains.persist.CategoryRepository;
 import ru.geekbrains.persist.CategorySpecification;
 

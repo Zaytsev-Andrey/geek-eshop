@@ -1,6 +1,7 @@
-package ru.geekbrains.persist;
+package ru.geekbrains.persist.model;
 
 import lombok.*;
+import ru.geekbrains.persist.model.Category;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -29,4 +30,8 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 }

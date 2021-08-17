@@ -3,8 +3,7 @@ package ru.geekbrains.service;
 import org.springframework.data.domain.Page;
 import ru.geekbrains.controller.ProductDto;
 import ru.geekbrains.controller.ProductListParam;
-import ru.geekbrains.persist.Category;
-import ru.geekbrains.persist.Product;
+import ru.geekbrains.persist.model.Product;
 
 import java.util.Optional;
 

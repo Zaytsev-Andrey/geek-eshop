@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import ru.geekbrains.controller.UserDto;
 import ru.geekbrains.controller.UserListParam;
 import ru.geekbrains.persist.*;
+import ru.geekbrains.persist.model.Role;
+import ru.geekbrains.persist.model.User;
 
 import java.util.Optional;
 import java.util.stream.Collectors;

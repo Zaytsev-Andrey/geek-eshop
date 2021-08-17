@@ -3,7 +3,7 @@ package ru.geekbrains.service;
 import org.springframework.data.domain.Page;
 import ru.geekbrains.controller.UserDto;
 import ru.geekbrains.controller.UserListParam;
-import ru.geekbrains.persist.User;
+import ru.geekbrains.persist.model.User;
 
 import java.util.Optional;
 

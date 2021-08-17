@@ -1,6 +1,6 @@
 package ru.geekbrains.service;
 
-import ru.geekbrains.persist.Role;
+import ru.geekbrains.persist.model.Role;
 
 import java.util.List;
 
