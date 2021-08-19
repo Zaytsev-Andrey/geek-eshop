@@ -6,10 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.geekbrains.controller.BrandDto;
 import ru.geekbrains.controller.CategoryDto;
 import ru.geekbrains.controller.ProductDto;
 import ru.geekbrains.controller.ProductListParam;
 import ru.geekbrains.persist.*;
+import ru.geekbrains.persist.model.Brand;
+import ru.geekbrains.persist.model.Category;
+import ru.geekbrains.persist.model.Product;
 
 import java.util.Optional;
 
@@ -38,6 +42,9 @@ public class ProductServiceImp implements ProductService {
         if (listParam.getCategoryFilter() != null && !listParam.getCategoryFilter().isBlank()) {
             specification = specification.and(ProductSpecification.categoryPrefix(listParam.getCategoryFilter()));
         }
+        if (listParam.getBrandFilter() != null && !listParam.getBrandFilter().isBlank()) {
+            specification = specification.and(ProductSpecification.brandPrefix(listParam.getBrandFilter()));
+        }
         if (listParam.getMinCostFilter() != null) {
             specification = specification.and(ProductSpecification.minCost(listParam.getMinCostFilter()));
         }
@@ -63,11 +70,13 @@ public class ProductServiceImp implements ProductService {
     @Override
     public void save(ProductDto productDto) {
         CategoryDto categoryDto = productDto.getCategoryDto();
+        BrandDto brandDto = productDto.getBrandDto();
         Product product = new Product(productDto.getId(),
                 productDto.getTitle(),
                 productDto.getCost(),
                 productDto.getDescription(),
-                new Category(categoryDto.getId(), categoryDto.getTitle()));
+                new Category(categoryDto.getId(), categoryDto.getTitle()),
+                new Brand(brandDto.getId(), brandDto.getTitle()));
         productRepository.save(product);
     }
 

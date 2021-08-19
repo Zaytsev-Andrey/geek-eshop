@@ -1,10 +1,10 @@
-package ru.geekbrains.persist;
+package ru.geekbrains.persist.model;
 
 import lombok.*;
+import ru.geekbrains.persist.model.Role;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")

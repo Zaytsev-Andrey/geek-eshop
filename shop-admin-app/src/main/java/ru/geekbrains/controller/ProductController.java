@@ -10,11 +10,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.geekbrains.persist.Product;
+import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.service.BrandService;
 import ru.geekbrains.service.CategoryService;
 import ru.geekbrains.service.ProductService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -27,10 +29,15 @@ public class ProductController {
 
     private CategoryService categoryService;
 
+    private BrandService brandService;
+
     @Autowired
-    public ProductController(ProductService productService, CategoryService categoryService) {
+    public ProductController(ProductService productService,
+                             CategoryService categoryService,
+                             BrandService brandService) {
         this.productService = productService;
         this.categoryService = categoryService;
+        this.brandService = brandService;
     }
 
     @GetMapping
@@ -47,9 +54,8 @@ public class ProductController {
         logger.info("Change product page requested");
 
         model.addAttribute("productDto", new ProductDto());
-        model.addAttribute("categories", categoryService.findAll().stream()
-                .map(category -> new CategoryDto(category.getId(), category.getTitle()))
-                .collect(Collectors.toSet()));
+        model.addAttribute("categories", findAllCategoryDto());
+        model.addAttribute("brands", findAllBrandDto());
 
         return "product_form";
     }
@@ -64,10 +70,10 @@ public class ProductController {
                 currentProduct.getTitle(),
                 currentProduct.getCost(),
                 currentProduct.getDescription(),
-                new CategoryDto(currentProduct.getCategory().getId(), currentProduct.getCategory().getTitle())));
-        model.addAttribute("categories", categoryService.findAll().stream()
-                .map(category -> new CategoryDto(category.getId(), category.getTitle()))
-                .collect(Collectors.toSet()));
+                new CategoryDto(currentProduct.getCategory().getId(), currentProduct.getCategory().getTitle()),
+                new BrandDto(currentProduct.getBrand().getId(), currentProduct.getBrand().getTitle())));
+        model.addAttribute("categories", findAllCategoryDto());
+        model.addAttribute("brands", findAllBrandDto());
 
         return "product_form";
     }
@@ -91,6 +97,18 @@ public class ProductController {
         productService.deleteById(id);
 
         return "redirect:/product";
+    }
+
+    private List<CategoryDto> findAllCategoryDto() {
+        return categoryService.findAll().stream()
+                .map(category -> new CategoryDto(category.getId(), category.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    private List<BrandDto> findAllBrandDto() {
+        return brandService.findAll().stream()
+                .map(brand -> new BrandDto(brand.getId(), brand.getTitle()))
+                .collect(Collectors.toList());
     }
 
     @ExceptionHandler
