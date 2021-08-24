@@ -6,15 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.BrandDto;
-import ru.geekbrains.controller.CategoryDto;
-import ru.geekbrains.controller.ProductDto;
-import ru.geekbrains.controller.ProductListParam;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import ru.geekbrains.controller.*;
 import ru.geekbrains.persist.*;
-import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
+import ru.geekbrains.persist.model.Picture;
 import ru.geekbrains.persist.model.Product;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -22,9 +21,21 @@ public class ProductServiceImp implements ProductService {
 
     private ProductRepository productRepository;
 
+    private CategoryRepository categoryRepository;
+
+    private BrandRepository brandRepository;
+
+    private PictureService pictureService;
+
     @Autowired
-    public ProductServiceImp(ProductRepository productRepository) {
+    public ProductServiceImp(ProductRepository productRepository,
+                             CategoryRepository categoryRepository,
+                             BrandRepository brandRepository,
+                             PictureService pictureService) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.brandRepository = brandRepository;
+        this.pictureService = pictureService;
     }
 
     @Override
@@ -68,15 +79,38 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Transactional
     public void save(ProductDto productDto) {
-        CategoryDto categoryDto = productDto.getCategoryDto();
-        BrandDto brandDto = productDto.getBrandDto();
-        Product product = new Product(productDto.getId(),
-                productDto.getTitle(),
-                productDto.getCost(),
-                productDto.getDescription(),
-                new Category(categoryDto.getId(), categoryDto.getTitle()),
-                new Brand(brandDto.getId(), brandDto.getTitle()));
+        Product product = (productDto.getId() != null) ? productRepository.findById(productDto.getId())
+                .orElseThrow(() -> new NotFoundException("Product not found")) : new Product();
+
+        product.setTitle(productDto.getTitle());
+        product.setCost(productDto.getCost());
+        product.setDescription(productDto.getDescription());
+        product.setCategory(categoryRepository.findById(productDto.getCategoryDto().getId())
+                .orElseThrow(() -> new NotFoundException("Category not found")));
+        product.setBrand(brandRepository.findById(productDto.getBrandDto().getId())
+                .orElseThrow(() -> new NotFoundException("Brand not found")));
+
+        if (productDto.getNewPictures() != null) {
+            for (MultipartFile newPicture : productDto.getNewPictures()) {
+                try {
+                    if (newPicture.getBytes().length == 0) {
+                        continue;
+                    }
+
+                    product.getPictures().add(new Picture(
+                            newPicture.getOriginalFilename(),
+                            newPicture.getContentType(),
+                            pictureService.createPicture(newPicture.getBytes()),
+                            product
+                    ));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
         productRepository.save(product);
     }
 

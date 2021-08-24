@@ -5,13 +5,14 @@ import ru.geekbrains.persist.model.Category;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Product {
 
     @Id
@@ -34,4 +35,16 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Picture> pictures = new ArrayList<>();
+
+    public Product(Long id, String title, BigDecimal cost, String description, Category category, Brand brand) {
+        this.id = id;
+        this.title = title;
+        this.cost = cost;
+        this.description = description;
+        this.category = category;
+        this.brand = brand;
+    }
 }

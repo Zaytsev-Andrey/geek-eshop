@@ -1,17 +1,17 @@
 package ru.geekbrains.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ProductDto {
 
     private Long id;
@@ -29,4 +29,19 @@ public class ProductDto {
 
     @NotNull
     private BrandDto brandDto;
+
+    private List<Long> pictures;
+
+    private MultipartFile[] newPictures;
+
+    public ProductDto(Long id, String title, BigDecimal cost, String description, CategoryDto categoryDto,
+                      BrandDto brandDto, List<Long> pictures) {
+        this.id = id;
+        this.title = title;
+        this.cost = cost;
+        this.description = description;
+        this.categoryDto = categoryDto;
+        this.brandDto = brandDto;
+        this.pictures = pictures;
+    }
 }

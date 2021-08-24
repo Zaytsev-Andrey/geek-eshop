@@ -6,7 +6,7 @@
 
     <preConditions>
         <dbms type="mysql"/>
-        <runningAs username="root"/>
+        <runningAs username="student"/>
     </preConditions>
 
     <changeSet id="0" author="andrey_zaytsev">
@@ -23,6 +23,12 @@
 
     <changeSet id="2000" author="andrey_zaytsev">
         <tagDatabase tag="v-2.0"/>
+    </changeSet>
+
+    <include file="v-3.0/root.changelog.v-3.0.xml" relativeToChangelogFile="true" />
+
+    <changeSet id="3000" author="andrey_zaytsev">
+        <tagDatabase tag="v-3.0"/>
     </changeSet>
 
 </databaseChangeLog>
