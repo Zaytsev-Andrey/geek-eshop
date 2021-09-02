@@ -6,24 +6,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.BrandDto;
-import ru.geekbrains.controller.BrandListParam;
-import ru.geekbrains.persist.BrandRepository;
-import ru.geekbrains.persist.BrandSpecification;
-import ru.geekbrains.persist.CategorySpecification;
+import ru.geekbrains.controller.dto.BrandDto;
+import ru.geekbrains.controller.param.BrandListParam;
+import ru.geekbrains.persist.repository.BrandRepository;
+import ru.geekbrains.persist.specification.BrandSpecification;
 import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BrandServiceImp implements BrandService {
+public class BrandServiceImpl implements BrandService {
 
     private BrandRepository brandRepository;
 
     @Autowired
-    public BrandServiceImp(BrandRepository brandRepository) {
+    public BrandServiceImpl(BrandRepository brandRepository) {
         this.brandRepository = brandRepository;
     }
 

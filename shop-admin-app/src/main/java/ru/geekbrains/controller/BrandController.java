@@ -9,8 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import ru.geekbrains.controller.dto.BrandDto;
+import ru.geekbrains.controller.exception.NotFoundException;
+import ru.geekbrains.controller.param.BrandListParam;
 import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
 import ru.geekbrains.service.BrandService;
 
 import javax.validation.Valid;

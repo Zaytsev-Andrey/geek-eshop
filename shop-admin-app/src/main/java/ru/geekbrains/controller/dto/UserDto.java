@@ -1,13 +1,13 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.geekbrains.controller.dto.RoleDto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

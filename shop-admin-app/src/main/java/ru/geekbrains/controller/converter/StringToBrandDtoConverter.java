@@ -1,7 +1,8 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import ru.geekbrains.controller.dto.BrandDto;
 
 @Component
 public class StringToBrandDtoConverter implements Converter<String, BrandDto> {

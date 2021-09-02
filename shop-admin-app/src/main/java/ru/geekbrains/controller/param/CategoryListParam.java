@@ -1,15 +1,13 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.param;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserListParam {
+public class CategoryListParam {
 
-    private String firstnameFilter;
-    private String lastnameFilter;
-    private String emailFilter;
+    private String titleFilter;
     private Integer page;
     private Integer size;
     private String sortField;

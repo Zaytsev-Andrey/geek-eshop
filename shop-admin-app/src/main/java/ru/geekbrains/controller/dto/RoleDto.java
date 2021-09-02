@@ -1,4 +1,4 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -8,16 +8,21 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.geekbrains.controller.*;
-import ru.geekbrains.persist.*;
+import ru.geekbrains.controller.dto.ProductDto;
+import ru.geekbrains.controller.exception.NotFoundException;
+import ru.geekbrains.controller.param.ProductListParam;
 import ru.geekbrains.persist.model.Picture;
 import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.repository.BrandRepository;
+import ru.geekbrains.persist.repository.CategoryRepository;
+import ru.geekbrains.persist.repository.ProductRepository;
+import ru.geekbrains.persist.specification.ProductSpecification;
 
 import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class ProductServiceImp implements ProductService {
+public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
 
@@ -28,10 +33,10 @@ public class ProductServiceImp implements ProductService {
     private PictureService pictureService;
 
     @Autowired
-    public ProductServiceImp(ProductRepository productRepository,
-                             CategoryRepository categoryRepository,
-                             BrandRepository brandRepository,
-                             PictureService pictureService) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              CategoryRepository categoryRepository,
+                              BrandRepository brandRepository,
+                              PictureService pictureService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;

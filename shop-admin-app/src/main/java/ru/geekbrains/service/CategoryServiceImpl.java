@@ -8,23 +8,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.CategoryDto;
-import ru.geekbrains.controller.CategoryListParam;
+import ru.geekbrains.controller.dto.CategoryDto;
+import ru.geekbrains.controller.param.CategoryListParam;
 import ru.geekbrains.persist.model.Category;
-import ru.geekbrains.persist.CategoryRepository;
-import ru.geekbrains.persist.CategorySpecification;
+import ru.geekbrains.persist.repository.CategoryRepository;
+import ru.geekbrains.persist.specification.CategorySpecification;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CategoryServiceImp implements CategoryService {
-    private final Logger logger = LoggerFactory.getLogger(CategoryServiceImp.class);
+public class CategoryServiceImpl implements CategoryService {
+    private final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private CategoryRepository categoryRepository;
 
     @Autowired
-    public CategoryServiceImp(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 

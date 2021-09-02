@@ -3,17 +3,17 @@ package ru.geekbrains.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.persist.model.Role;
-import ru.geekbrains.persist.RoleRepository;
+import ru.geekbrains.persist.repository.RoleRepository;
 
 import java.util.List;
 
 @Service
-public class RoleServiceImp implements RoleService {
+public class RoleServiceImpl implements RoleService {
 
     private RoleRepository roleRepository;
 
     @Autowired
-    public RoleServiceImp(RoleRepository roleRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 

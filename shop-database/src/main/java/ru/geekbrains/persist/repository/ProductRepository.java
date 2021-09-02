@@ -1,4 +1,4 @@
-package ru.geekbrains.persist;
+package ru.geekbrains.persist.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

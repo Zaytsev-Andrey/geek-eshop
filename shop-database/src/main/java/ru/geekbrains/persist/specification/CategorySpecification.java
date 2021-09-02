@@ -1,4 +1,4 @@
-package ru.geekbrains.persist;
+package ru.geekbrains.persist.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 import ru.geekbrains.persist.model.Category;

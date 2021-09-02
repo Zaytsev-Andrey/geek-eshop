@@ -1,7 +1,9 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.dto;
 
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.geekbrains.controller.dto.BrandDto;
+import ru.geekbrains.controller.dto.CategoryDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

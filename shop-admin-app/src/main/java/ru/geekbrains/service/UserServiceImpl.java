@@ -7,24 +7,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.UserDto;
-import ru.geekbrains.controller.UserListParam;
-import ru.geekbrains.persist.*;
+import ru.geekbrains.controller.dto.UserDto;
+import ru.geekbrains.controller.param.UserListParam;
 import ru.geekbrains.persist.model.Role;
 import ru.geekbrains.persist.model.User;
+import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.specification.UserSpecification;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImp implements UserService {
+public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }

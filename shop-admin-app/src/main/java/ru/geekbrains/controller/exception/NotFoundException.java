@@ -1,4 +1,4 @@
-package ru.geekbrains.controller;
+package ru.geekbrains.controller.exception;
 
 public class NotFoundException extends RuntimeException {
 
