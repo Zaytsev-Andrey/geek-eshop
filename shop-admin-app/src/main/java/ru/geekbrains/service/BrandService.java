@@ -1,11 +1,9 @@
 package ru.geekbrains.service;
 
 import org.springframework.data.domain.Page;
-import ru.geekbrains.controller.BrandDto;
-import ru.geekbrains.controller.BrandListParam;
-import ru.geekbrains.controller.CategoryDto;
+import ru.geekbrains.controller.dto.BrandDto;
+import ru.geekbrains.controller.param.BrandListParam;
 import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
 
 import java.util.List;
 import java.util.Optional;
