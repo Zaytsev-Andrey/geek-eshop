@@ -70,8 +70,8 @@ public class PictureServiceFileImp implements PictureService {
         Optional<Picture> pictureOpt = pictureRepository.findById(id);
         if (pictureOpt.isPresent()) {
             try {
-                pictureRepository.delete(pictureOpt.get());
                 Files.delete(Path.of(storagePath, pictureOpt.get().getStorageUUID()));
+                pictureRepository.delete(pictureOpt.get());
             } catch (IOException e) {
                 logger.error("Picture with id: {} was not deleted", id);
             }

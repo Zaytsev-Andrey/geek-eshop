@@ -13,14 +13,22 @@ public class ProductSpecification {
         return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("title"), prefix + "%");
     }
 
-    public static Specification<Product> categoryPrefix(String prefix) {
+//    public static Specification<Product> categoryPrefix(String prefix) {
+//        return (root, criteriaQuery, criteriaBuilder) ->
+//                criteriaBuilder.like(root.get("category").get("title"), prefix + "%");
+//    }
+    public static Specification<Product> categoryId(Long categoryId) {
         return (root, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("category").get("title"), prefix + "%");
+                criteriaBuilder.equal(root.get("category").get("id"), categoryId);
     }
 
-    public static Specification<Product> brandPrefix(String prefix) {
+//    public static Specification<Product> brandPrefix(String prefix) {
+//        return (root, criteriaQuery, criteriaBuilder) ->
+//                criteriaBuilder.like(root.get("brand").get("title"), prefix + "%");
+//    }
+    public static Specification<Product> brandId(Long brandId) {
         return (root, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("brand").get("title"), prefix + "%");
+                criteriaBuilder.equal(root.get("brand").get("id"), brandId);
     }
 
     public static Specification<Product> minCost(BigDecimal minCost) {

@@ -1,0 +1,44 @@
+<div class="row py-2">
+  <div class="col-md-6 col-xs-12">
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <li data-bs-target="#carouselExampleIndicators"
+                *ngFor="let pic of product.pictures;let index = index;let isFirst = first"
+                [attr.data-slide-to]="index"></li>
+
+      </div>
+      <div class="carousel-inner" *ngFor="let pic of product.pictures;let index = index;let isFirst = first">
+        <div class="carousel-item" [ngClass]="{active:isFirst}">
+          <img src="/api/v1/picture/{{pic}}" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+              data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+              data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xs-12">
+    <h2>{{product.title}}</h2>
+    <p>Price: ${{product.cost}}</p>
+    <p>Description</p>
+    <p class="text-muted">{{product.description}}</p>
+    <form class="row">
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Add to card</button>
+      </div>
+      <div class="col-auto">
+        <input type="number" class="form-control" value="0"/>
+      </div>
+    </form>
+
+  </div>
+</div>

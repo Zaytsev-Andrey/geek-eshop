@@ -55,11 +55,11 @@ public class ProductServiceImpl implements ProductService {
         if (listParam.getTitleFilter() != null && !listParam.getTitleFilter().isBlank()) {
             specification = specification.and(ProductSpecification.titlePrefix(listParam.getTitleFilter()));
         }
-        if (listParam.getCategoryFilter() != null && !listParam.getCategoryFilter().isBlank()) {
-            specification = specification.and(ProductSpecification.categoryPrefix(listParam.getCategoryFilter()));
+        if (listParam.getCategoryFilter() != null && listParam.getCategoryFilter() > 0) {
+            specification = specification.and(ProductSpecification.categoryId(listParam.getCategoryFilter()));
         }
-        if (listParam.getBrandFilter() != null && !listParam.getBrandFilter().isBlank()) {
-            specification = specification.and(ProductSpecification.brandPrefix(listParam.getBrandFilter()));
+        if (listParam.getBrandFilter() != null && listParam.getBrandFilter() > 0) {
+            specification = specification.and(ProductSpecification.brandId(listParam.getBrandFilter()));
         }
         if (listParam.getMinCostFilter() != null) {
             specification = specification.and(ProductSpecification.minCost(listParam.getMinCostFilter()));
