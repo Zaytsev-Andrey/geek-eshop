@@ -5,12 +5,17 @@ import ru.geekbrains.persist.model.Brand;
 import ru.geekbrains.persist.model.Product;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class ProductSpecification {
 
     public static Specification<Product> titlePrefix(String prefix) {
         return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("title"), prefix + "%");
+    }
+
+    public static Specification<Product> titleLike(String substring) {
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("title"), "%" + substring + "%");
     }
 
 //    public static Specification<Product> categoryPrefix(String prefix) {
@@ -20,6 +25,11 @@ public class ProductSpecification {
     public static Specification<Product> categoryId(Long categoryId) {
         return (root, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("category").get("id"), categoryId);
+    }
+
+    public static Specification<Product> categoryContains(List<Long> categoriesId) {
+        return (root, criteriaQuery, criteriaBuilder) ->
+                root.get("category").get("id").in(categoriesId);
     }
 
 //    public static Specification<Product> brandPrefix(String prefix) {

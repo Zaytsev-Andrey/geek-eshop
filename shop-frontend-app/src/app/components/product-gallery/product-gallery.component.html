@@ -1,0 +1,18 @@
+<div class="row row-cols-1 row-cols-md-3 g-4">
+
+  <div *ngFor="let prod of products" class="col">
+    <div class="card">
+      <img class="card-img-top" *ngIf="prod.pictures.length > 0" src="/api/v1/picture/{{prod.pictures[0]}}"
+           width="100" height="200" alt="Card image cap">
+      <img class="card-img-top" *ngIf="prod.pictures.length == 0" src="../../../assets/no_photo.jpeg"
+           width="100" height="200" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">{{prod.title}}</h5>
+        <p class="card-text">{{prod.description}}</p>
+        <a routerLink="/product/{{prod.id}}" class="btn btn-primary">View</a>
+        <a (click)="addToCart(prod.id)" class="btn btn-primary">Add to card</a>
+      </div>
+    </div>
+  </div>
+
+</div>

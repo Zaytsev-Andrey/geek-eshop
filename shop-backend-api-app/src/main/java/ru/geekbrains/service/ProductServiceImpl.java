@@ -48,10 +48,10 @@ public class ProductServiceImpl implements ProductService {
         Specification<Product> specification = Specification.where(null);
 
         if (listParam.getTitleFilter() != null && !listParam.getTitleFilter().isBlank()) {
-            specification = specification.and(ProductSpecification.titlePrefix(listParam.getTitleFilter()));
+            specification = specification.and(ProductSpecification.titleLike(listParam.getTitleFilter()));
         }
-        if (listParam.getCategoryFilter() != null && listParam.getCategoryFilter() > 0) {
-            specification = specification.and(ProductSpecification.categoryId(listParam.getCategoryFilter()));
+        if (listParam.getCategoriesFilter() != null && listParam.getCategoriesFilter().size() > 0) {
+            specification = specification.and(ProductSpecification.categoryContains(listParam.getCategoriesFilter()));
         }
         if (listParam.getBrandFilter() != null && listParam.getBrandFilter() > 0) {
             specification = specification.and(ProductSpecification.brandId(listParam.getBrandFilter()));

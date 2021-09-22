@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import {Product} from "../model/product";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Page} from "../model/page";
+import {ProductFilterDto} from "../model/product-filter-dto";
+import {Observable} from "rxjs";
+
+const PAGE_SIZE: number = 6;
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +16,26 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  public findAll() {
-    return this.http.get<Page>('/api/v1/product/all').toPromise();
-  }
+  public findAll(productFilterDto?: ProductFilterDto, pageNumber?: number): Observable<Page> {
+    let params = new HttpParams();
 
-  public findOfPage(pageNumber: number) {
-    return this.http.get<Page>('/api/v1/product/all?page=' + pageNumber).toPromise();
+    if (productFilterDto?.categoriesFilter != null && productFilterDto.categoriesFilter.length > 0) {
+      params = params.set("categoriesFilter", productFilterDto.categoriesFilter.toString());
+    }
+    if (productFilterDto?.titleFilter != null) {
+      params = params.set("titleFilter", productFilterDto.titleFilter);
+    }
+    if (productFilterDto?.minCostFilter != null) {
+      params = params.set("minCostFilter", productFilterDto.minCostFilter);
+    }
+    if (productFilterDto?.maxCostFilter != null) {
+      params = params.set("maxCostFilter", productFilterDto.maxCostFilter);
+    }
+
+    params = params.set("page", pageNumber != null ? pageNumber : 1);
+    params = params.set("size", PAGE_SIZE);
+
+    return this.http.get<Page>('/api/v1/product/all', {params: params});
   }
 
   public findById(id: number) {

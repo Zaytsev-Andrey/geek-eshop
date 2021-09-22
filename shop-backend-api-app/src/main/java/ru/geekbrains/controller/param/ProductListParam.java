@@ -4,13 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
 public class ProductListParam {
 
     private String titleFilter;
-    private Long categoryFilter;
+    private List<Long> categoriesFilter;
     private Long brandFilter;
     private BigDecimal minCostFilter;
     private BigDecimal maxCostFilter;

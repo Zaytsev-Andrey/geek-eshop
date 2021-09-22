@@ -1,0 +1,15 @@
+<div class="row py-2">
+  <div class="col-md-3 col-xs-12">
+    <app-product-filter (filterApplied)="filterApplied($event)"></app-product-filter>
+  </div>
+
+  <div class="col-md-9 col-xs-12">
+
+    <app-product-gallery [products]="products"></app-product-gallery>
+
+    <div class="col-md-9 col-xs-12 mt-3">
+      <app-pagination (goToPageEvent)="goToPage($event)" [page]="page"></app-pagination>
+    </div>
+  </div>
+
+</div>
