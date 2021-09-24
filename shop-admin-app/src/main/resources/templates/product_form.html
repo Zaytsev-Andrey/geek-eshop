@@ -26,19 +26,23 @@
 
                         <label for="categoryDto">Category</label>
                         <select class="form-control" id="categoryDto" th:field="*{categoryDto}">
+                            <option th:selected="${productDto.categoryDto == null}" th:value="null">-</option>
                             <option th:each="cat : ${categories}"
                                     th:text="${cat.title}"
                                     th:value="${cat.id} + ';' + ${cat.title}"
                                     th:selected="${productDto.categoryDto?.equals(cat)}"></option>
                         </select>
+                        <p class="text-danger" th:if="${#fields.hasErrors('categoryDto')}" th:errors="*{categoryDto}"></p>
 
                         <label for="brandDto">Brand</label>
                         <select class="form-control" id="brandDto" th:field="*{brandDto}">
+                            <option th:selected="${productDto.categoryDto == null}" th:value="null">-</option>
                             <option th:each="br : ${brands}"
                                     th:text="${br.title}"
                                     th:value="${br.id} + ';' + ${br.title}"
                                     th:selected="${productDto.categoryDto?.equals(br)}"></option>
                         </select>
+                        <p class="text-danger" th:if="${#fields.hasErrors('brandDto')}" th:errors="*{brandDto}"></p>
 
                         <label>Cost</label>
                         <input type="number" class="form-control" id="cost" th:field="*{cost}" placeholder="Enter cost">
@@ -62,21 +66,32 @@
                 </form>
             </div>
 
-            <div class="col-12">
-                <div class="form-group">
-                    <figure class="figure" th:each="pic : ${productDto.pictures}">
-                        <form class="d-inline" th:method="delete"
-                              th:action="@{/picture/{productId}/{pictureId}(productId=${productDto.id}, pictureId=${pic})}">
-                            <img th:src="@{/picture/{pictureId}(pictureId=${pic})}"
-                                 class="img-fluid img-thumbnail" width="200px">
-                            <figcaption class="figure-caption text-center">
-                                <button type="submit" class="btn btn-link">
-                                    <i class="text-danger">x delete</i>
-                                </button>
-                            </figcaption>
-                        </form>
-                    </figure>
+<!--            <div class="col-12">-->
+<!--                <div class="form-group">-->
+<!--                    <figure class="figure" th:each="pic : ${productDto.pictures}">-->
+<!--                        <form class="d-inline" th:method="delete"-->
+<!--                              th:action="@{/picture/{productId}/{pictureId}(productId=${productDto.id}, pictureId=${pic})}">-->
+<!--                            <img th:src="@{/picture/{pictureId}(pictureId=${pic})}"-->
+<!--                                 class="img-fluid img-thumbnail" width="200px">-->
+<!--                            <figcaption class="figure-caption text-center">-->
+<!--                                <button type="submit" class="btn btn-link">-->
+<!--                                    <i class="text-danger">x delete</i>-->
+<!--                                </button>-->
+<!--                            </figcaption>-->
+<!--                        </form>-->
+<!--                    </figure>-->
 
+<!--                </div>-->
+<!--            </div>-->
+            <div class="container-fluid mt-4">
+                <div class="card-columns">
+                    <div class="card" th:each="pic : ${productDto.pictures}">
+                        <form class="card-header" th:method="delete"
+                              th:action="@{/picture/{productId}/{pictureId}(productId=${productDto.id}, pictureId=${pic})}">
+                            <button class="float-right"><i class="fa fa-times"></i></button>
+                        </form>
+                        <img class="rounded mx-auto d-block" th:src="@{/picture/{pictureId}(pictureId=${pic})}" width="80%">
+                    </div>
                 </div>
             </div>
         </div>

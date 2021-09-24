@@ -27,12 +27,31 @@
                            th:value="${param.titleFilter}" placeholder="Title">
 
                     <label for="categoryFilter" class="sr-only">Category</label>
-                    <input type="text" class="form-control" id="categoryFilter" name="categoryFilter"
-                           th:value="${param.categoryFilter}" placeholder="Category">
+                    <select class="form-control" id="categoryFilter" name="categoryFilter">
+                        <option th:selected="${param.categoryFilter == null || param.categoryFilter[0].isBlank()}"
+                            value="-1">All</option>
+                        <option th:each="cat : ${categories}"
+                                th:text="${cat.title}"
+                                th:value="${cat.id}"
+                                th:selected="
+                                    ${#strings.equals((param.categoryFilter != null ? param.categoryFilter[0] : ''),
+                                    #strings.toString(cat.id))}"></option>
+                    </select>
 
                     <label for="brandFilter" class="sr-only">Brand</label>
-                    <input type="text" class="form-control" id="brandFilter" name="brandFilter"
-                           th:value="${param.brandFilter}" placeholder="Brand">
+<!--                    <input type="text" class="form-control" id="brandFilter" name="brandFilter"-->
+<!--                           th:value="${param.brandFilter}" placeholder="Brand">-->
+                    <select class="form-control" id="brandFilter" name="brandFilter">
+                        <option th:selected="${param.brandFilter == null || param.brandFilter[0].isBlank()}"
+                                value="-1">All</option>
+                        <option th:each="brand : ${brands}"
+                                th:text="${brand.title}"
+                                th:value="${brand.id}"
+                                th:selected="${#strings.equals((param.brandFilter != null ? param.brandFilter[0] : ''),
+                                    #strings.toString(brand.id))}">
+
+                        </option>
+                    </select>
 
                     <label for="minCostFilter" class="sr-only">Min cost</label>
                     <input type="number" class="form-control" id="minCostFilter" name="minCostFilter"

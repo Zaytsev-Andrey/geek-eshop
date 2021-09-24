@@ -5,6 +5,7 @@ import ru.geekbrains.persist.model.Brand;
 import ru.geekbrains.persist.model.Product;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class ProductSpecification {
@@ -13,14 +14,31 @@ public class ProductSpecification {
         return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("title"), prefix + "%");
     }
 
-    public static Specification<Product> categoryPrefix(String prefix) {
-        return (root, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("category").get("title"), prefix + "%");
+    public static Specification<Product> titleLike(String substring) {
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("title"), "%" + substring + "%");
     }
 
-    public static Specification<Product> brandPrefix(String prefix) {
+//    public static Specification<Product> categoryPrefix(String prefix) {
+//        return (root, criteriaQuery, criteriaBuilder) ->
+//                criteriaBuilder.like(root.get("category").get("title"), prefix + "%");
+//    }
+    public static Specification<Product> categoryId(Long categoryId) {
         return (root, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("brand").get("title"), prefix + "%");
+                criteriaBuilder.equal(root.get("category").get("id"), categoryId);
+    }
+
+    public static Specification<Product> categoryContains(List<Long> categoriesId) {
+        return (root, criteriaQuery, criteriaBuilder) ->
+                root.get("category").get("id").in(categoriesId);
+    }
+
+//    public static Specification<Product> brandPrefix(String prefix) {
+//        return (root, criteriaQuery, criteriaBuilder) ->
+//                criteriaBuilder.like(root.get("brand").get("title"), prefix + "%");
+//    }
+    public static Specification<Product> brandId(Long brandId) {
+        return (root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("brand").get("id"), brandId);
     }
 
     public static Specification<Product> minCost(BigDecimal minCost) {

@@ -6,6 +6,12 @@ import ru.geekbrains.persist.model.Role;
 import javax.persistence.*;
 import java.util.List;
 
+@NamedEntityGraph(
+        name = "userWithRolesEntityGraph",
+        attributeNodes = {
+                @NamedAttributeNode("roles")
+        }
+)
 @Entity
 @Table(name = "users")
 @Getter

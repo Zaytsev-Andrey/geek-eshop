@@ -1,13 +1,29 @@
 package ru.geekbrains.persist.model;
 
 import lombok.*;
-import ru.geekbrains.persist.model.Category;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "productAllEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode("category"),
+                        @NamedAttributeNode("brand"),
+                }
+        ),
+        @NamedEntityGraph(
+                name = "productByIdEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode("category"),
+                        @NamedAttributeNode("brand"),
+                        @NamedAttributeNode("pictures")
+                }
+        )
+})
 @Entity
 @Table(name = "products")
 @Getter

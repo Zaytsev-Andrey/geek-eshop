@@ -56,6 +56,8 @@ public class ProductController {
 
         Page<Product> products = productService.findWithFilter(listParam);
         model.addAttribute("products", products);
+        model.addAttribute("categories", findAllCategoryDto());
+        model.addAttribute("brands", findAllBrandDto());
         return "products";
     }
 
@@ -95,10 +97,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public String update(@Valid ProductDto productDto, BindingResult result) {
+    public String update(@Valid ProductDto productDto, BindingResult result, Model model) {
         logger.info("Updating product");
 
         if (result.hasErrors()) {
+            model.addAttribute("categories", findAllCategoryDto());
+            model.addAttribute("brands", findAllBrandDto());
             return "product_form";
         }
 

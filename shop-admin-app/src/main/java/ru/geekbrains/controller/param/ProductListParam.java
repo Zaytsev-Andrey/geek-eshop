@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 public class ProductListParam {
 
     private String titleFilter;
-    private String categoryFilter;
-    private String brandFilter;
+    private Long categoryFilter;
+    private Long brandFilter;
     private BigDecimal minCostFilter;
     private BigDecimal maxCostFilter;
     private Integer page;

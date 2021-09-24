@@ -9,7 +9,12 @@ public class StringToCategoryDtoConverter implements Converter<String, CategoryD
 
     @Override
     public CategoryDto convert(String s) {
-        String[] arr = s.split(";");
-        return new CategoryDto(Long.parseLong(arr[0]), arr[1]);
+        CategoryDto categoryDto = null;
+
+        if (!s.isBlank()) {
+            String[] arr = s.split(";");
+            categoryDto = new CategoryDto(Long.parseLong(arr[0]), arr[1]);
+        }
+        return categoryDto;
     }
 }
