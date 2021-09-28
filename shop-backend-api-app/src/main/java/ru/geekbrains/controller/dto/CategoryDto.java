@@ -1,11 +1,11 @@
 package ru.geekbrains.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.*;
 
-
-@Data
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDto {
