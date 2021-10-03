@@ -2,6 +2,7 @@ package ru.geekbrains.controller;
 
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import ru.geekbrains.service.dto.LineItem;
 
 import java.util.List;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -34,7 +36,7 @@ public class OrderController {
 
     @GetMapping("/own")
     public List<OrderDto> findAll(Authentication authentication) throws NotFoundException {
-        String email = ((User) authentication.getPrincipal()).getUsername();
+        String email = authentication.getName();
 
         return userService.gerUserOrders(email);
     }
@@ -49,7 +51,7 @@ public class OrderController {
         if (!cartService.isEmpty()) {
             orderService.save(cartService.getLineItems(),
                     cartService.getSubTotal(),
-                    ((User) authentication.getPrincipal()).getUsername());
+                    authentication.getName());
             cartService.clear();
         }
 
@@ -69,7 +71,7 @@ public class OrderController {
 
         orderService.removeOrder(id);
 
-        String email = ((User) authentication.getPrincipal()).getUsername();
+        String email = authentication.getName();
         return userService.gerUserOrders(email);
     }
 
