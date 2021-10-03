@@ -15,4 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     @EntityGraph("userWithRolesEntityGraph")
     Optional<User> findByEmail(String email);
+
+    @EntityGraph("userWithOrdersEntityGraph")
+    Optional<User> findUserByEmail(String email);
 }

@@ -5,13 +5,20 @@ import ru.geekbrains.persist.model.Role;
 
 import javax.persistence.*;
 import java.util.List;
-
-@NamedEntityGraph(
-        name = "userWithRolesEntityGraph",
-        attributeNodes = {
-                @NamedAttributeNode("roles")
-        }
-)
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "userWithRolesEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode("roles")
+                }
+        ),
+        @NamedEntityGraph(
+                name = "userWithOrdersEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode("orders")
+                }
+        )
+})
 @Entity
 @Table(name = "users")
 @Getter
@@ -49,4 +56,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
+    public User(Long id, String firstname, String lastname, String email, String password, List<Role> roles) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 }

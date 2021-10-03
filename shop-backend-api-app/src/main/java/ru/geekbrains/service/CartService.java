@@ -21,6 +21,8 @@ public interface CartService {
 
     void clear();
 
+    boolean isEmpty();
+
     List<LineItem> getLineItems();
 
     BigDecimal getSubTotal();
