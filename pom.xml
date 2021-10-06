@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.4</version>
+        <version>2.5.5</version>
         <relativePath />
     </parent>
 
@@ -21,13 +21,17 @@
         <maven.compiler.target>11</maven.compiler.target>
         <java.version>11</java.version>
         <liquibase.version>4.3.1</liquibase.version>
+        <spring-cloud.version>2020.0.4</spring-cloud.version>
     </properties>
 
     <modules>
         <module>shop-database</module>
-        <module>shop-admin-app</module>
+<!--        <module>shop-admin-app</module>-->
         <module>shop-backend-api-app</module>
         <module>picture-service</module>
+        <module>spring-cloud-config</module>
+        <module>spring-eureka</module>
+        <module>spring-cloud-gateway</module>
     </modules>
 
     <dependencies>
@@ -37,5 +41,17 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
