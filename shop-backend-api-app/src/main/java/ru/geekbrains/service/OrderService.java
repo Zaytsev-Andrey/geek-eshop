@@ -13,13 +13,15 @@ import java.util.List;
 
 public interface OrderService {
 
-    void save(List<LineItem> lineItems, BigDecimal total, String email) throws NotFoundException;
+    void save(List<LineItem> lineItems, BigDecimal total, String email);
 
-    List<OrderDetailDto> findOrderDetails(Long id) throws NotFoundException;
+    List<OrderDetailDto> getOrderDetails(Long id);
+
+    void changeOrderStatus(Long orderId, String newStatus) throws NotFoundException;
 
     void removeOrder(Long id);
 
-    Order editOrderDetail(OrderDetailDto orderDetailDto) throws NotFoundException;
+    Order editOrderDetail(OrderDetailDto orderDetailDto);
 
-    Order removeOrderDetail(Long id) throws NotFoundException;
+    Order removeOrderDetail(Long id);
 }

@@ -4,7 +4,6 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.controller.dto.OrderDetailDto;
 import ru.geekbrains.controller.dto.OrderDto;
@@ -35,19 +34,17 @@ public class OrderController {
     }
 
     @GetMapping("/own")
-    public List<OrderDto> findAll(Authentication authentication) throws NotFoundException {
-        String email = authentication.getName();
-
-        return userService.gerUserOrders(email);
+    public List<OrderDto> getUserOrders(Authentication authentication) {
+        return userService.getUserOrders(authentication.getName());
     }
 
     @GetMapping("/{id}")
-    public List<OrderDetailDto> findDetails(@PathVariable("id") Long id) throws NotFoundException {
-        return orderService.findOrderDetails(id);
+    public List<OrderDetailDto> getOrderDetails(@PathVariable("id") Long id) {
+        return orderService.getOrderDetails(id);
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json")
-    public List<LineItem> createOrder(Authentication authentication) throws NotFoundException {
+    public List<LineItem> createOrder(Authentication authentication) {
         if (!cartService.isEmpty()) {
             orderService.save(cartService.getLineItems(),
                     cartService.getSubTotal(),
@@ -59,26 +56,26 @@ public class OrderController {
     }
 
     @PutMapping(produces = "application/json", consumes = "application/json")
-    public List<OrderDetailDto> editOrderDetail(@RequestBody OrderDetailDto orderDetailDto) throws NotFoundException {
+    public List<OrderDetailDto> editOrderDetail(@RequestBody OrderDetailDto orderDetailDto) {
         Order order = orderService.editOrderDetail(orderDetailDto);
 
-        return orderService.findOrderDetails(order.getId());
+        return orderService.getOrderDetails(order.getId());
     }
 
     @DeleteMapping("/{id}")
     public List<OrderDto> removeOrder(@PathVariable("id") Long id,
-                                      Authentication authentication) throws NotFoundException {
+                                      Authentication authentication) {
 
         orderService.removeOrder(id);
 
         String email = authentication.getName();
-        return userService.gerUserOrders(email);
+        return userService.getUserOrders(email);
     }
 
     @DeleteMapping("/detail/{id}")
-    public List<OrderDetailDto> removeOrderDetail(@PathVariable("id") Long id) throws NotFoundException {
+    public List<OrderDetailDto> removeOrderDetail(@PathVariable("id") Long id) {
         Order order = orderService.removeOrderDetail(id);
 
-        return orderService.findOrderDetails(order.getId());
+        return orderService.getOrderDetails(order.getId());
     }
 }

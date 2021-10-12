@@ -10,6 +10,7 @@ import ru.geekbrains.controller.dto.BrandDto;
 import ru.geekbrains.controller.dto.CategoryDto;
 import ru.geekbrains.controller.dto.ProductDto;
 import ru.geekbrains.controller.param.ProductListParam;
+import ru.geekbrains.exception.ProductNotFoundException;
 import ru.geekbrains.persist.model.Picture;
 import ru.geekbrains.persist.model.Product;
 import ru.geekbrains.persist.repository.ProductRepository;
@@ -29,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<ProductDto> findById(Long id) {
+    public ProductDto findById(Long id) {
         return productRepository.findById(id)
                 .map(product -> new ProductDto(product.getId(),
                         product.getTitle(),
@@ -40,7 +41,8 @@ public class ProductServiceImpl implements ProductService {
                         product.getPictures().stream()
                                 .map(Picture::getId)
                                 .collect(Collectors.toList())
-                        ));
+                        ))
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
