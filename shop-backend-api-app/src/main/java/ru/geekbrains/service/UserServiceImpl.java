@@ -4,6 +4,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.controller.dto.OrderDto;
+import ru.geekbrains.exception.UserNotFoundException;
 import ru.geekbrains.persist.model.User;
 import ru.geekbrains.persist.repository.UserRepository;
 
@@ -22,9 +23,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<OrderDto> gerUserOrders(String email) throws NotFoundException {
+    public List<OrderDto> getUserOrders(String email) {
         User currentUser = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(email));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
 

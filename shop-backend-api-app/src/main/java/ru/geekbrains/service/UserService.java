@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface UserService {
 
-    public List<OrderDto> gerUserOrders(String email) throws NotFoundException;
+    List<OrderDto> getUserOrders(String email);
 }

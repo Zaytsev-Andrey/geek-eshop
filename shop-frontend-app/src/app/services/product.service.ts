@@ -35,10 +35,10 @@ export class ProductService {
     params = params.set("page", pageNumber != null ? pageNumber : 1);
     params = params.set("size", PAGE_SIZE);
 
-    return this.http.get<Page>('/api/v1/product/all', {params: params});
+    return this.http.get<Page>(`/api/v1/product/all`, {params: params});
   }
 
   public findById(id: number) {
-    return this.http.get<Product>('/api/v1/product/' + id).toPromise();
+    return this.http.get<Product>(`/api/v1/product/${id}`).toPromise();
   }
 }

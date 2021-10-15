@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Optional<ProductDto> findById(@PathVariable("id") Long id) {
+    public ProductDto findById(@PathVariable("id") Long id) {
 
         return productService.findById(id);
     }

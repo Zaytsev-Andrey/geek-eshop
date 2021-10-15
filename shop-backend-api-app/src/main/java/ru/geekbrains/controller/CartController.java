@@ -35,8 +35,7 @@ public class CartController {
     public List<LineItem> addToCart(@RequestBody AddLineItemDto addLineItemDto) {
         logger.info("New LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
 
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId())
-                .orElseThrow(RuntimeException::new);
+        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
         cartService.addProductQty(productDto,
                 addLineItemDto.getColor(),
                 addLineItemDto.getMaterial(),
@@ -56,8 +55,7 @@ public class CartController {
     public AllCartDto updateLineItem(@RequestBody AddLineItemDto addLineItemDto) {
         logger.info("Updating LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
 
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId())
-                .orElseThrow(RuntimeException::new);
+        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
 
         cartService.updateProductQty(productDto,
                 addLineItemDto.getColor(),
@@ -73,8 +71,7 @@ public class CartController {
     public AllCartDto removeLineItem(@RequestBody AddLineItemDto addLineItemDto) {
         logger.info("Deleting LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
 
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId())
-                .orElseThrow(RuntimeException::new);
+        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
 
         cartService.removeProduct(productDto,
                 addLineItemDto.getColor(),
