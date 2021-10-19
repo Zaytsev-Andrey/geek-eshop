@@ -1,15 +1,14 @@
 package ru.geekbrains.service;
 
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.OrderDto;
 import ru.geekbrains.controller.dto.ProductDto;
 import ru.geekbrains.exception.OrderDetailNotFoundException;
 import ru.geekbrains.exception.OrderNotFoundException;
@@ -38,15 +37,19 @@ public class OrderServiceImpl implements OrderService {
 
     private RabbitTemplate rabbitTemplate;
 
+    private SimpMessagingTemplate webSocketTemplate;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
-                            RabbitTemplate rabbitTemplate) {
+                            RabbitTemplate rabbitTemplate,
+                            SimpMessagingTemplate webSocketTemplate) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.rabbitTemplate = rabbitTemplate;
+        this.webSocketTemplate = webSocketTemplate;
     }
 
     @Override
@@ -103,14 +106,13 @@ public class OrderServiceImpl implements OrderService {
                 new OrderMessage(order.getId(), order.getStatus().getName()));
     }
 
-    @Override
-    public void changeOrderStatus(Long orderId, String newStatus) {
+    private Order changeOrderStatus(Long orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
         order.setStatus(OrderStatus.valueOf(newStatus));
 
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     @Override
@@ -166,6 +168,9 @@ public class OrderServiceImpl implements OrderService {
     public void receive(OrderMessage orderMessage) {
         logger.info("Order with id '{}' state change to '{}'", orderMessage.getId(), orderMessage.getStatus());
 
-        changeOrderStatus(orderMessage.getId(), orderMessage.getStatus());
+        Order order = changeOrderStatus(orderMessage.getId(), orderMessage.getStatus());
+        orderMessage.setStatus(order.getStatus().getName());
+
+        webSocketTemplate.convertAndSend("/order_out/order", orderMessage);
     }
 }

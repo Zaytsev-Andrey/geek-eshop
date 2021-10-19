@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Order} from "../../model/order";
 import {OrderService} from "../../services/order.service";
+import {OrderStatusService} from "../../services/order-status.service";
 
 export const ORDER_URL = 'order';
 
@@ -13,7 +14,8 @@ export class OrderPageComponent implements OnInit {
 
   orders: Order[] = [];
 
-  constructor(public orderService: OrderService) { }
+  constructor(public orderService: OrderService,
+              public orderStatusService: OrderStatusService) { }
 
   ngOnInit(): void {
     this.orderService.findOrdersByUser()
@@ -21,6 +23,19 @@ export class OrderPageComponent implements OnInit {
         this.orders = res;
       }).catch(err => {
         console.log('Orders were not load', err);
+    })
+    this.orderStatusService.onMessage('/order_out/order')
+      .subscribe(msg => {
+        this.changeStatus(msg);
+      });
+  }
+
+  changeStatus(order: Order) {
+    console.log(`MESSAGE: order with id='${order.id}' and status='${order.status}'`);
+    this.orders.forEach(o => {
+      if (o.id == order.id) {
+        o.status = order.status;
+      }
     })
   }
 

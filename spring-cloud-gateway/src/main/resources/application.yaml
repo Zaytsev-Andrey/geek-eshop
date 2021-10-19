@@ -21,3 +21,7 @@ spring:
           uri: lb://SHOP-BACKEND-API
           predicates:
             - Path=/api/v1/**
+        - id: shop-backend-api-ws
+          uri: lb:ws://SHOP-BACKEND-API
+          predicates:
+            - Path=/api/v1/**
