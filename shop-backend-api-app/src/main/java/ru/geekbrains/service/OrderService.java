@@ -17,8 +17,6 @@ public interface OrderService {
 
     List<OrderDetailDto> getOrderDetails(Long id);
 
-    void changeOrderStatus(Long orderId, String newStatus) throws NotFoundException;
-
     void removeOrder(Long id);
 
     Order editOrderDetail(OrderDetailDto orderDetailDto);
