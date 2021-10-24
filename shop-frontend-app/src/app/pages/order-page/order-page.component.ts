@@ -32,11 +32,15 @@ export class OrderPageComponent implements OnInit {
 
   changeStatus(order: Order) {
     console.log(`MESSAGE: order with id='${order.id}' and status='${order.status}'`);
-    this.orders.forEach(o => {
-      if (o.id == order.id) {
-        o.status = order.status;
-      }
-    })
+    // this.orders.forEach(o => {
+    //   if (o.id == order.id) {
+    //     o.status = order.status;
+    //   }
+    // })
+    let changeOrder = this.orders.find(o => o.id === order.id);
+    if (changeOrder) {
+      changeOrder.status = order.status;
+    }
   }
 
   removeOrder(id: number) {
