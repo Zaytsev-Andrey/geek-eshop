@@ -6,7 +6,7 @@
 
     <preConditions>
         <dbms type="mysql"/>
-        <runningAs username="student"/>
+        <runningAs username="root"/>
     </preConditions>
 
     <changeSet id="0" author="andrey_zaytsev">
