@@ -21,14 +21,15 @@ public class PictureServiceFileImp implements PictureService {
 
     private final Logger logger = LoggerFactory.getLogger(PictureServiceFileImp.class);
 
-    @Value("${picture.storage.path}")
     private String storagePath;
 
     private PictureRepository pictureRepository;
 
     @Autowired
-    public PictureServiceFileImp(PictureRepository pictureRepository) {
+    public PictureServiceFileImp(PictureRepository pictureRepository,
+                                 @Value("${picture.storage.path}") String storagePath) {
         this.pictureRepository = pictureRepository;
+        this.storagePath = storagePath;
     }
 
     @Override
