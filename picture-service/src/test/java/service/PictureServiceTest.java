@@ -7,6 +7,8 @@ import ru.geekbrains.persist.repository.PictureRepository;
 import ru.geekbrains.service.PictureService;
 import ru.geekbrains.service.PictureServiceFileImp;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -20,7 +22,7 @@ public class PictureServiceTest {
 
     private PictureRepository pictureRepository;
 
-    private String storagePath = "/home/andrey/projects/geekbrains/level7/geek-eshop/storage";
+    private String storagePath = "@project.basedir@/storage";
 
     @BeforeEach
     public void init() {
@@ -32,8 +34,8 @@ public class PictureServiceTest {
     public void testPictureService() {
         byte[] expectedPicture = {1};
         String uuid = pictureService.createPicture(expectedPicture);
-        assertNotNull(uuid);
-        assertNotEquals(0, uuid.length());
+        assertFalse(uuid.isBlank());
+        assertTrue(Files.exists(Path.of(storagePath, uuid)));
 
         when(pictureRepository.findById(1L))
                 .thenReturn(Optional.of(new Picture("", "", uuid, null)));
@@ -46,5 +48,6 @@ public class PictureServiceTest {
 
         optPicture = pictureService.getPictureDataById(1);
         assertFalse(optPicture.isPresent());
+        assertFalse(Files.exists(Path.of(storagePath, uuid)));
     }
 }

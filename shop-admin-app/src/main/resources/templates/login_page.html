@@ -22,7 +22,7 @@
                         <label>Password</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-primary" id="btn-login">Login</button>
                 </form>
                 <p class="text-success" sec:authorize="isAuthenticated()">
                     <span sec:authentication="principal.username"></span> is authenticated

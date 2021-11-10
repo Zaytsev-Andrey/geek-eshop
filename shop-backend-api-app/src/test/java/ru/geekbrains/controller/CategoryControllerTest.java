@@ -2,7 +2,9 @@ package ru.geekbrains.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @AutoConfigureMockMvc
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CategoryControllerTest {
 
     @Autowired
@@ -37,6 +40,17 @@ public class CategoryControllerTest {
     private SimpMessagingTemplate webSocketTemplate;
 
     @Test
+    @org.junit.jupiter.api.Order(1)
+    public void testFindAllEmpty() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/category/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(2)
     public void testFindAll() throws Exception {
         Category categoryMonitor = categoryRepository.save(new Category(null, "Monitor"));
         Category categoryLaptop = categoryRepository.save(new Category(null, "Laptop"));
@@ -48,15 +62,6 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath(
                         "$[*].title", hasItems(categoryMonitor.getTitle(), categoryLaptop.getTitle())));
-    }
-
-    @Test
-    public void testFindAllEmpty() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/category/all")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty());
     }
 
 }

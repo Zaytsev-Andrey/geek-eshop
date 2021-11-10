@@ -1,6 +1,8 @@
 package ru.geekbrains.controller;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @AutoConfigureMockMvc
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProductControllerTest {
 
     @Autowired
@@ -49,7 +52,22 @@ public class ProductControllerTest {
     @MockBean
     private SimpMessagingTemplate webSocketTemplate;
 
+    private Category expectedCategory;
+    private Brand expectedBrand;
+
     @Test
+    @org.junit.jupiter.api.Order(1)
+    public void testProductDetailsEmpty() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/product/all")
+                        .param("sortField", "id")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty());
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(2)
     public void testProductDetails() throws Exception {
         Product product = saveTestProduct();
 
@@ -62,21 +80,12 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.content[0].title", is(product.getTitle())))
                 .andExpect(jsonPath("$.content[0].cost").value(product.getCost().setScale(1)))
                 .andExpect(jsonPath("$.content[0].description", is(product.getDescription())))
-                .andExpect(jsonPath("$.content[0].categoryDto.title", is(product.getCategory().getTitle())))
-                .andExpect(jsonPath("$.content[0].brandDto.title", is(product.getBrand().getTitle())));
+                .andExpect(jsonPath("$.content[0].categoryDto.title", is(expectedCategory.getTitle())))
+                .andExpect(jsonPath("$.content[0].brandDto.title", is(expectedBrand.getTitle())));
     }
 
     @Test
-    public void testProductDetailsEmpty() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/product/all")
-                        .param("sortField", "id")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty());
-    }
-
-    @Test
+    @org.junit.jupiter.api.Order(3)
     public void testFindById() throws Exception {
         Product product = saveTestProduct();
 
@@ -87,29 +96,30 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.title", is(product.getTitle())))
                 .andExpect(jsonPath("$.cost").value(product.getCost().setScale(1)))
                 .andExpect(jsonPath("$.description", is(product.getDescription())))
-                .andExpect(jsonPath("$.categoryDto.title", is(product.getCategory().getTitle())))
-                .andExpect(jsonPath("$.brandDto.title", is(product.getBrand().getTitle())));
+                .andExpect(jsonPath("$.categoryDto.title", is(expectedCategory.getTitle())))
+                .andExpect(jsonPath("$.brandDto.title", is(expectedBrand.getTitle())));
     }
 
     @Test
+    @org.junit.jupiter.api.Order(4)
     public void testFindByIdException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/product/1")
+                .get("/product/10")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$", containsString("not found")));
     }
 
     private Product saveTestProduct() {
-        Category category = categoryRepository.save(new Category(null, "Monitor"));
-        Brand brand = brandRepository.save(new Brand(null, "LG"));
+        expectedCategory = categoryRepository.save(new Category(1L, "Monitor"));
+        expectedBrand = brandRepository.save(new Brand(1L, "LG"));
         return productRepository.save(new Product(
-                null,
+                1L,
                 "LG 27UP850",
                 new BigDecimal(500),
                 "4k Monitor",
-                category,
-                brand
+                expectedCategory,
+                expectedBrand
         ));
     }
 }

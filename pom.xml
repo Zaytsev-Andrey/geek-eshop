@@ -35,6 +35,7 @@
         <module>spring-eureka</module>
         <module>spring-cloud-gateway</module>
         <module>spring-integration-price</module>
+        <module>shop-ui-tests</module>
     </modules>
 
     <dependencies>

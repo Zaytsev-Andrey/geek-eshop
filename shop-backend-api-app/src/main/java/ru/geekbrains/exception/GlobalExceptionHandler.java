@@ -14,15 +14,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
             ProductNotFoundException.class,
             UserNotFoundException.class,
-            OrderNotFoundException.class
+            OrderNotFoundException.class,
+            OrderDetailNotFoundException.class
     })
     public ResponseEntity<String> notFoundException(RuntimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
     public ResponseEntity<String> accessDeniedException(AccessDeniedException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = Exception.class)
