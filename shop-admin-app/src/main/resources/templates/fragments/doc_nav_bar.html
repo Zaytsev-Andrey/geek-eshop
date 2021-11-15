@@ -8,15 +8,15 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown">
-                    <i class="fa fa-user"></i> <span sec:authentication="principal.username"></span>
+                    <i class="fa fa-user"></i> <span span id="dd_user" sec:authentication="principal.username"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <form sec:authorize="isAuthenticated()"
                           th:action="@{/logout}"
                           th:method="post"
                           class="form-inline my-2 my-lg-0">
-                        <button class="dropdown-item">
-                            Logout
+                        <button id="btn-logout" class="dropdown-item">
+                            Logout <sec:authentication="principal.username"></span>
                         </button>
                     </form>
                 </div>

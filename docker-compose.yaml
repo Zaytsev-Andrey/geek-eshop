@@ -1,0 +1,74 @@
+version: '3'
+services:
+  cloude-config:
+    image: registry.heroku.com/geek-spring-cloud-config/web:latest
+    ports:
+      - 8888
+
+  shop-admin-app:
+    image: registry.heroku.com/geek-shop-admin-app/web:latest
+    ports:
+      - 8087:8087
+    volumes:
+      - picture-storage:/var/storage
+    command: bash -c "/apps/wait-for.sh db 3306 && /apps/wait-for.sh cloude-config 8888 && /apps/entrypoint.sh"
+
+  picture-service-app:
+    image: registry.heroku.com/geek-picture-service-app/web:latest
+    ports:
+      - 8085
+    volumes:
+      - picture-storage:/var/storage
+    command: bash -c "/apps/wait-for.sh db 3306 && /apps/wait-for.sh cloude-config 8888 && /apps/entrypoint.sh"
+
+  delivery-service:
+    image: registry.heroku.com/geek-shop-delivery-service/web:latest
+    command: bash -c "/apps/wait-for.sh rabbitmq 5672 && /apps/wait-for.sh cloude-config 8888 && /apps/entrypoint.sh"
+
+  shop-backend-api-app:
+    image: registry.heroku.com/geek-shop-backend-api-app/web:latest
+    ports:
+      - 8081
+    command: bash -c "/apps/wait-for.sh db 3306 && /apps/wait-for.sh redis 6379 && /apps/wait-for.sh cloude-config 8888 && /apps/entrypoint.sh"
+    depends_on:
+      - cloude-gateway
+      - picture-service-app
+      - delivery-service
+
+  cloude-gateway:
+    image: registry.heroku.com/geek-spring-cloud-gateway/web:latest
+    ports:
+      - 8080
+
+  shop-frontend:
+    image: shop-frontend-app:latest
+    ports:
+      - 80:80
+    depends_on:
+      - cloude-gateway
+
+  db:
+    image: mysql:8.0.23
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    ports:
+      - 3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    ports:
+      - 5672
+      - 15672:15672
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379
+
+volumes:
+  mysql-data:
+  picture-storage:

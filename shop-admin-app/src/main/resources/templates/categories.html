@@ -16,7 +16,7 @@
 
     <div class="content p-4">
         <div class="col-12">
-            <a class="btn btn-primary" th:href="@{/category/new}">Add Category</a>
+            <a id="btn-add-category" class="btn btn-primary" th:href="@{/category/new}">Add Category</a>
         </div>
 
         <div class="col-12 mt-3">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-12">
-            <table class="table table-bordered my-2">
+            <table id="categories" class="table table-bordered my-2">
                 <thead>
                 <tr>
                     <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('ID', 'id')">ID</th>
@@ -78,7 +78,7 @@
                        sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
                 </li>
 
-                <li class="page-item" th:classappend="${!categories.hasNext()} ? 'disabled'">
+                <li id="btn-next-page" class="page-item" th:classappend="${!categories.hasNext()} ? 'disabled'">
                     <a class="page-link" th:href="@{/category(page=${categories.number} + 2, size=${categories.size},
                     titleFilter=${param.titleFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}">Next</a>
