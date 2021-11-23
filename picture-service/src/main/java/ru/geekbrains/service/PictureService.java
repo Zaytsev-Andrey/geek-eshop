@@ -6,9 +6,9 @@ public interface PictureService {
 
     Optional<String> getPictureContentTypeById(long id);
 
-    Optional<byte[]> getPictureDataById(long id);
+    byte[] downloadPictureById(long id);
 
-    String createPicture(byte[] picture);
+    String savePicture(byte[] picture);
 
     void deletePictureById(long id);
 }

@@ -36,11 +36,11 @@
 
                         <label for="brandDto">Brand</label>
                         <select class="form-control" id="brandDto" th:field="*{brandDto}">
-                            <option th:selected="${productDto.categoryDto == null}" th:value="null">-</option>
+                            <option th:selected="${productDto.brandDto == null}" th:value="null">-</option>
                             <option th:each="br : ${brands}"
                                     th:text="${br.title}"
                                     th:value="${br.id} + ';' + ${br.title}"
-                                    th:selected="${productDto.categoryDto?.equals(br)}"></option>
+                                    th:selected="${productDto.brandDto?.equals(br)}"></option>
                         </select>
                         <p class="text-danger" th:if="${#fields.hasErrors('brandDto')}" th:errors="*{brandDto}"></p>
 
@@ -58,6 +58,7 @@
                         <label for="newPictures">Picture image</label>
                         <input type="file" th:field="*{newPictures}" class="form-control"
                                id="newPictures" placeholder="Upload new product pictures" multiple >
+                        <p class="text-danger" th:if="${#fields.hasErrors('newPictures')}" th:errors="*{newPictures}"></p>
                     </div>
 
 

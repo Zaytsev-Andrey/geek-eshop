@@ -22,7 +22,8 @@ public class PictureServiceTest {
 
     private PictureRepository pictureRepository;
 
-    private String storagePath = "@project.basedir@/storage";
+    private String storagePath = "/home/andrey/projects/geekbrains/level7/geek-eshop/storage";
+//    private String storagePath = "@project.basedir@/storage";
 
     @BeforeEach
     public void init() {
@@ -33,21 +34,19 @@ public class PictureServiceTest {
     @Test
     public void testPictureService() {
         byte[] expectedPicture = {1};
-        String uuid = pictureService.createPicture(expectedPicture);
+        String uuid = pictureService.savePicture(expectedPicture);
         assertFalse(uuid.isBlank());
         assertTrue(Files.exists(Path.of(storagePath, uuid)));
 
         when(pictureRepository.findById(1L))
-                .thenReturn(Optional.of(new Picture("", "", uuid, null)));
+                .thenReturn(Optional.of(new Picture("", "", uuid)));
 
-        Optional<byte[]> optPicture = pictureService.getPictureDataById(1);
-        assertNotNull(optPicture.get());
-        assertArrayEquals(expectedPicture, optPicture.get());
+        byte[] optPicture = pictureService.downloadPictureById(1);
+        assertEquals(1, optPicture.length);
+        assertArrayEquals(expectedPicture, optPicture);
 
         pictureService.deletePictureById(1);
 
-        optPicture = pictureService.getPictureDataById(1);
-        assertFalse(optPicture.isPresent());
         assertFalse(Files.exists(Path.of(storagePath, uuid)));
     }
 }

@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public interface BrandService {
 
-    List<Brand> findAll();
+    List<BrandDto> findAllBrands();
 
-    Optional<Brand> findById(Long id);
+    BrandDto findBrandById(Long id);
 
-    Page<Brand> findWithFilter(BrandListParam listParam);
+    Page<Brand> findBrandsWithFilter(BrandListParam listParam);
 
-    void save(BrandDto brandDto);
+    void saveBrand(BrandDto brandDto);
 
-    void deleteById(Long id);
+    void deleteBrandById(Long id);
 }

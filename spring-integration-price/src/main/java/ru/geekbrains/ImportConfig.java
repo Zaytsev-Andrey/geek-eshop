@@ -115,7 +115,8 @@ public class ImportConfig {
                 new Category(csvProduct.getCsvCategory().getId(), csvProduct.getCsvCategory().getTitle()),
                 new Brand(csvProduct.getCsvBrand().getId(), csvProduct.getCsvBrand().getTitle())
         );
-        product.getPictures().addAll(createPictures(product, csvProduct.getPictureNames()));
+        List<Picture> pictures = createPictures(product, csvProduct.getPictureNames());
+        pictures.forEach(product::addPicture);
         return product;
     }
 
@@ -126,8 +127,8 @@ public class ImportConfig {
             try {
                 Path path = Path.of(sourcePath, f);
                 byte[] pictureFile = Files.readAllBytes(path);
-                String storageUUID = pictureService.createPicture(pictureFile);
-                picture = new Picture(f, Files.probeContentType(path), storageUUID, product);
+                String storageUUID = pictureService.savePicture(pictureFile);
+                picture = new Picture(f, Files.probeContentType(path), storageUUID);
             } catch (IOException e) {
                 logger.error("File '{}' not found", f);
             }

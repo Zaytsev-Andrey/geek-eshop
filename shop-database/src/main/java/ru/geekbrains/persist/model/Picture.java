@@ -32,7 +32,7 @@ public class Picture {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public Picture(String name, String contentType, String storageUUID, Product product) {
+    public Picture(String name, String contentType, String storageUUID) {
         this.name = name;
         this.contentType = contentType;
         this.storageUUID = storageUUID;

@@ -10,11 +10,13 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<User> findById(Long id);
+    UserDto findUserById(Long id);
 
-    Page<User> findWithFilter(UserListParam listParam);
+    Optional<User> findUserByEmail(String email);
 
-    void save(UserDto userDto);
+    Page<User> findUsersWithFilter(UserListParam listParam);
 
-    void deleteById(Long id);
+    void saveUser(UserDto userDto);
+
+    void deleteUserById(Long id);
 }

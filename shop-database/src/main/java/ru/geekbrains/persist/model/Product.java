@@ -63,4 +63,16 @@ public class Product {
         this.category = category;
         this.brand = brand;
     }
+
+    public void addPicture(Picture picture) {
+        if (picture == null) {
+            throw new NullPointerException("Can't add null pucture");
+        }
+        if (picture.getProduct() != null) {
+            throw new IllegalStateException("Picture is already assigned to an Product");
+        }
+
+        picture.setProduct(this);
+        pictures.add(picture);
+    }
 }

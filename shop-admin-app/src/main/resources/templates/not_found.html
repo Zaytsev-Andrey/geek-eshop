@@ -15,7 +15,7 @@
     </nav>
 
     <div class="col-md-10" align="center">
-        <h1>404</h1>
+        <h1 th:text="${T(org.springframework.http.HttpStatus).valueOf(#response.status)}">404</h1>
         <h3 th:text="${message}">Not found</h3>
     </div>
 </div>

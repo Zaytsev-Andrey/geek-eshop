@@ -3,22 +3,18 @@ package ru.geekbrains.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import ru.geekbrains.controller.dto.RoleDto;
 import ru.geekbrains.controller.dto.UserDto;
-import ru.geekbrains.controller.exception.NotFoundException;
 import ru.geekbrains.controller.param.UserListParam;
-import ru.geekbrains.persist.model.User;
 import ru.geekbrains.service.RoleService;
 import ru.geekbrains.service.UserService;
 
 import javax.validation.Valid;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -36,90 +32,68 @@ public class UserController {
         this.roleService = roleService;
     }
 
-    @GetMapping
-    public String userList(Model model, UserListParam userListParams) {
-        logger.info("User list page requested");
+    /**
+     * Load before each request method for loading list of roles to model
+     * @return list of user roles
+     */
+    @ModelAttribute("roles")
+    public List<RoleDto> loadUserRoles() {
+        logger.info("Loading roles to model");
+        return roleService.findAllRoles();
+    }
 
-        model.addAttribute("users", userService.findWithFilter(userListParams));
+    @GetMapping
+    public String showUserListWithPaginationAndFilter(Model model, UserListParam userListParams) {
+        logger.info("Getting page of users with filter");
+        model.addAttribute("users", userService.findUsersWithFilter(userListParams));
         return "users";
     }
 
     @GetMapping("/new")
-    public String newUserForm(Model model) {
-        logger.info("Change user page requested");
-
+    public String initNewUserForm(Model model) {
+        logger.info("Initialization form to create new user");
         model.addAttribute("userDto", new UserDto());
-        addListRoleToModel(model);
         return "user_form";
     }
 
     @GetMapping("/{id}")
-    public String editUser(@PathVariable("id") Long id, Model model) {
-        logger.info("Editing user");
-
-        User currentUser = userService.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        model.addAttribute("userDto", new UserDto(currentUser.getId(),
-                currentUser.getFirstname(),
-                currentUser.getLastname(),
-                currentUser.getEmail(),
-                currentUser.getRoles().stream()
-                        .map(role -> new RoleDto(role.getId(), role.getRole()))
-                        .collect(Collectors.toList())));
-        addListRoleToModel(model);
-
+    public String initEditUserForm(@PathVariable("id") Long id, Model model) {
+        logger.info("Editing user with id='{}'", id);
+        model.addAttribute("userDto", userService.findUserById(id));
         return "user_form";
     }
 
-
-
     @PostMapping
-    public String update(@Valid UserDto userDto, BindingResult result, Model model) {
-        logger.info("Updating user");
+    public String saveUser(@Valid UserDto userDto, BindingResult result) {
+        logger.info("Saving user with login='{}'", userDto.getEmail());
 
-        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
-            result.rejectValue("password", "", "Password and confirm password do not equals");
-            addListRoleToModel(model);
+        // if password not equals confirm password
+        boolean passwordError = !userDto.getPassword().equals(userDto.getConfirmPassword());
+        // if E-mail already exist
+        boolean emailError = userService.findUserByEmail(userDto.getEmail()).isPresent();
+
+        if (result.hasErrors() || passwordError || emailError) {
+            if (passwordError) {
+                result.rejectValue("password", "",
+                        "Password and confirm password are not equals");
+            }
+            if (emailError) {
+                result.rejectValue("email", "", String.format("User with E-mail: %s already exists",
+                        userDto.getEmail()));
+            }
             return "user_form";
         }
 
-        if (result.hasErrors()) {
-            addListRoleToModel(model);
-            return "user_form";
-        }
-
-        try {
-            userService.save(userDto);
-        } catch (Exception e) {
-            result.rejectValue("email", "", String.format("User with E-mail: %s already exists",
-                    userDto.getEmail()));
-            addListRoleToModel(model);
-            return "user_form";
-        }
+        userService.saveUser(userDto);
 
         return "redirect:/user";
     }
 
     @DeleteMapping("/{id}")
-    public String removeUser(@PathVariable("id") Long id, Model model) {
-        logger.info("Deleting user");
-
-        userService.deleteById(id);
-
+    public String deleteUser(@PathVariable("id") Long id) {
+        logger.info("Deleting user with id='{}'", id);
+        userService.deleteUserById(id);
         return "redirect:/user";
     }
 
-    private void addListRoleToModel(Model model) {
-        model.addAttribute("roles", roleService.findAll().stream()
-                .map(role -> new RoleDto(role.getId(), role.getRole()))
-                .collect(Collectors.toSet()));
-    }
-
-    @ExceptionHandler
-    public ModelAndView notFoundExceptionHandler(NotFoundException e) {
-        ModelAndView modelAndView = new ModelAndView("not_found");
-        modelAndView.addObject("message", e.getMessage());
-        modelAndView.setStatus(HttpStatus.NOT_FOUND);
-        return modelAndView;
-    }
 }

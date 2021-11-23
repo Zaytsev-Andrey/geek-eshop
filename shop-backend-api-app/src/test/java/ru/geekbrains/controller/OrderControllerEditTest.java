@@ -2,10 +2,7 @@ package ru.geekbrains.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +22,7 @@ import ru.geekbrains.controller.dto.CategoryDto;
 import ru.geekbrains.controller.dto.OrderDetailDto;
 import ru.geekbrains.controller.dto.ProductDto;
 import ru.geekbrains.persist.model.*;
+import ru.geekbrains.persist.model.Order;
 import ru.geekbrains.persist.repository.*;
 
 import java.math.BigDecimal;

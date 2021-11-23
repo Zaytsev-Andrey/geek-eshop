@@ -11,6 +11,9 @@ import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Simple object for transfer business object Product to UI
+ */
 @Getter
 @Setter
 @NoArgsConstructor

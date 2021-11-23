@@ -1,12 +1,14 @@
 package ru.geekbrains.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
-@Data
+/**
+ * Simple object for transfer business object Brand to UI
+ */
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BrandDto {

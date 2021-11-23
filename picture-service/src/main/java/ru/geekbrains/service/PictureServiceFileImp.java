@@ -39,7 +39,7 @@ public class PictureServiceFileImp implements PictureService {
     }
 
     @Override
-    public Optional<byte[]> getPictureDataById(long id) {
+    public byte[] downloadPictureById(long id) {
         return pictureRepository.findById(id)
                 .map(picture -> Path.of(storagePath, picture.getStorageUUID()))
                 .filter(Files::exists)
@@ -50,12 +50,14 @@ public class PictureServiceFileImp implements PictureService {
                         logger.error("Can not read picture file with id: " + id, e);
                         throw new RuntimeException(e);
                     }
-                });
+                })
+                .orElse(new byte[0]);
     }
 
     @Override
-    public String createPicture(byte[] picture) {
+    public String savePicture(byte[] picture) {
         String fileName = UUID.randomUUID().toString();
+        logger.info("Storage path: '{}'", storagePath);
         try (OutputStream os = Files.newOutputStream(Path.of(storagePath, fileName))) {
             os.write(picture);
         } catch (IOException e) {

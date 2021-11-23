@@ -3,16 +3,12 @@ package ru.geekbrains.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import ru.geekbrains.controller.dto.BrandDto;
-import ru.geekbrains.controller.exception.NotFoundException;
 import ru.geekbrains.controller.param.BrandListParam;
-import ru.geekbrains.persist.model.Brand;
 import ru.geekbrains.service.BrandService;
 
 import javax.validation.Valid;
@@ -31,58 +27,41 @@ public class BrandController {
     }
 
     @GetMapping
-    public String brandList(Model model, BrandListParam listParam) {
-        logger.info("Brand list page requested");
-
-        model.addAttribute("brands", brandService.findWithFilter(listParam));
+    public String showBrandListWithPaginationAndFilter(Model model, BrandListParam listParam) {
+        logger.info("Getting page of brands with filter");
+        model.addAttribute("brands", brandService.findBrandsWithFilter(listParam));
         return "brands";
     }
 
     @GetMapping("/new")
-    public String newBrandForm(Model model) {
-        logger.info("Change brand page requested");
-
+    public String initNewBrandForm(Model model) {
+        logger.info("Initialization form to create new brand");
         model.addAttribute("brandDto", new BrandDto());
         return "brand_form";
     }
 
     @GetMapping("/{id}")
-    public String editBrand(@PathVariable("id") Long id, Model model) {
-        logger.info("Editing brand");
-
-        Brand currentBrand = brandService.findById(id)
-                .orElseThrow(() -> new NotFoundException("Brand not found"));
-        model.addAttribute("brandDto", new BrandDto(currentBrand.getId(), currentBrand.getTitle()));
-
+    public String initEditBrandForm(@PathVariable("id") Long id, Model model) {
+        logger.info("Editing brand with id='{}'", id);
+        model.addAttribute("brandDto", brandService.findBrandById(id));
         return "brand_form";
     }
 
     @PostMapping
-    public String update(@Valid BrandDto brandDto, BindingResult bindingResult) {
-        logger.info("Updating brand");
-
+    public String saveBrand(@Valid BrandDto brandDto, BindingResult bindingResult) {
+        logger.info("Saving brand '{}'", brandDto.getTitle());
         if (bindingResult.hasErrors()) {
             return "brand_form";
         }
-
-        brandService.save(brandDto);
+        brandService.saveBrand(brandDto);
         return "redirect:/brand";
     }
 
     @DeleteMapping("/{id}")
-    public String removeBrand(@PathVariable("id") Long id) {
-        logger.info("Deleting brand");
-
-        brandService.deleteById(id);
-
+    public String deleteBrand(@PathVariable("id") Long id) {
+        logger.info("Deleting brand with id='{}'", id);
+        brandService.deleteBrandById(id);
         return "redirect:/brand";
     }
 
-    @ExceptionHandler
-    public ModelAndView notFoundExceptionHandler(NotFoundException e) {
-        ModelAndView modelAndView = new ModelAndView("not_found");
-        modelAndView.addObject("message", e.getMessage());
-        modelAndView.setStatus(HttpStatus.NOT_FOUND);
-        return modelAndView;
-    }
 }

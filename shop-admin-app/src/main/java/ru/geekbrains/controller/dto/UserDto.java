@@ -1,15 +1,17 @@
 package ru.geekbrains.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.geekbrains.controller.dto.RoleDto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@Data
+/**
+ * Simple object for transfer business object User to UI
+ */
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {

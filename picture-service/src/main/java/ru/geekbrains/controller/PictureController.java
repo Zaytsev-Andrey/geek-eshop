@@ -28,14 +28,15 @@ public class PictureController {
     }
 
     @GetMapping("/{pictureId}")
-    public void downloadProductPicture(@PathVariable("pictureId") Long pictureId,
-                                       HttpServletResponse response) throws IOException {
+    public void downloadPicture(@PathVariable("pictureId") Long pictureId,
+                                HttpServletResponse response) throws IOException {
+        logger.info("Downloading picture with id='{}'", pictureId);
         Optional<String> opt = pictureService.getPictureContentTypeById(pictureId);
 
         if (opt.isPresent()) {
             response.setContentType(opt.get());
             response.getOutputStream()
-                    .write(pictureService.getPictureDataById(pictureId).get());
+                    .write(pictureService.downloadPictureById(pictureId));
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -44,10 +45,8 @@ public class PictureController {
     @DeleteMapping("/{productId}/{pictureId}")
     public String deletePicture(@PathVariable("productId") Long productID,
                                 @PathVariable("pictureId") Long pictureId) {
-        logger.info("Deleting picture with UUID: {}", pictureId);
-
+        logger.info("Deleting picture with id='{}'", pictureId);
         pictureService.deletePictureById(pictureId);
-
         return "redirect:/product/" + productID;
     }
 }

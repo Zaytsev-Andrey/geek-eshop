@@ -7,7 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.geekbrains.controller.dto.RoleDto;
 import ru.geekbrains.controller.dto.UserDto;
+import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.param.UserListParam;
 import ru.geekbrains.persist.model.Role;
 import ru.geekbrains.persist.model.User;
@@ -31,12 +33,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public UserDto findUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, "User not found"));
+        return new UserDto(user.getId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getRoles().stream()
+                        .map(role -> new RoleDto(role.getId(), role.getRole()))
+                        .collect(Collectors.toList()));
     }
 
     @Override
-    public Page<User> findWithFilter(UserListParam listParam) {
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public Page<User> findUsersWithFilter(UserListParam listParam) {
         Specification<User> specification = Specification.where(null);
 
         if (listParam.getFirstnameFilter() != null && !listParam.getFirstnameFilter().isBlank()) {
@@ -65,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(UserDto userDto) {
+    public void saveUser(UserDto userDto) {
         userRepository.save(new User(userDto.getId(),
                 userDto.getFirstname(),
                 userDto.getLastname(),
@@ -77,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
 }

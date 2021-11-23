@@ -1,19 +1,21 @@
 package ru.geekbrains.service;
 
 import org.springframework.data.domain.Page;
+import ru.geekbrains.controller.dto.CategoryDto;
 import ru.geekbrains.controller.dto.ProductDto;
 import ru.geekbrains.controller.param.ProductListParam;
 import ru.geekbrains.persist.model.Product;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
 
-    Optional<Product> findById(Long id);
+    ProductDto findProductById(Long id);
 
-    Page<Product> findWithFilter(ProductListParam listParam);
+    Page<Product> findProductsWithFilter(ProductListParam listParam);
 
-    void save(ProductDto productDto);
+    void saveProduct(ProductDto productDto);
 
-    void deleteById(Long id);
+    void deleteProductById(Long id);
 }

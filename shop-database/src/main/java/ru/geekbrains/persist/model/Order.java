@@ -72,7 +72,6 @@ public class Order {
         if (detail.getOrder() != null) {
             throw new IllegalStateException("Detail is already assigned to an Order");
         }
-
         orderDetails.add(detail);
         detail.setOrder(this);
     }

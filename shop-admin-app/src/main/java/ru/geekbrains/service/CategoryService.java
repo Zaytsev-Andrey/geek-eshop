@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    List<Category> findAll();
+    List<CategoryDto> findAllCategories();
 
-    Optional<Category> findById(Long id);
+    CategoryDto findCategoryById(Long id);
 
-    Page<Category> findWithFilter(CategoryListParam listParam);
+    Page<Category> findCategoryWithFilter(CategoryListParam listParam);
 
-    void save(CategoryDto categoryDTO);
+    void saveCategory(CategoryDto categoryDTO);
 
-    void deleteById(Long id);
+    void deleteCategoryById(Long id);
 }

@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @AutoConfigureMockMvc
 @SpringBootTest
 public class CartControllerTest {
@@ -67,7 +68,7 @@ public class CartControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        userRepository.save(new User(1L,
+        userRepository.save(new User(2L,
                 "User",
                 "User",
                 "user@mail.ru",
@@ -113,7 +114,7 @@ public class CartControllerTest {
                         .with(httpBasic("user@mail.ru", "user"))
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lineItems", hasSize(1)));
+                .andExpect(jsonPath("$.lineItems", hasSize(0)));
     }
 
 
