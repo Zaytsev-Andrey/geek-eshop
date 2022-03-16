@@ -36,6 +36,8 @@
         <module>spring-cloud-gateway</module>
         <module>spring-integration-price</module>
 <!--        <module>shop-ui-tests</module>-->
+    	<module>shop-dto</module>
+    	<module>shop-session-storage</module>
     </modules>
 
     <dependencies>

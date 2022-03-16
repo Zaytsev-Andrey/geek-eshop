@@ -1,9 +1,9 @@
 package ru.geekbrains.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.dto.CategoryDto;
+
+import ru.geekbrains.dto.CategoryDto;
 import ru.geekbrains.persist.repository.CategoryRepository;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> findAll() {
         return categoryRepository.findAll().stream()
-                .map(category -> new CategoryDto(category.getId(), category.getTitle()))
+                .map(CategoryDto::fromCategory)
                 .collect(Collectors.toList());
     }
 }

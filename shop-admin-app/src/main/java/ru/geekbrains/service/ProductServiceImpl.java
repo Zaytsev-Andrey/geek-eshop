@@ -1,7 +1,5 @@
 package ru.geekbrains.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.geekbrains.controller.dto.BrandDto;
-import ru.geekbrains.controller.dto.CategoryDto;
-import ru.geekbrains.controller.dto.ProductDto;
+import ru.geekbrains.dto.ProductDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.exception.BadRequestException;
 import ru.geekbrains.controller.param.ProductListParam;
@@ -25,21 +21,15 @@ import ru.geekbrains.persist.specification.ProductSpecification;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_COUNT = 5;
 
     private ProductRepository productRepository;
-
-    private CategoryRepository categoryRepository;
-
-    private BrandRepository brandRepository;
 
     private PictureService pictureService;
 
@@ -49,27 +39,15 @@ public class ProductServiceImpl implements ProductService {
                               BrandRepository brandRepository,
                               PictureService pictureService) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.brandRepository = brandRepository;
         this.pictureService = pictureService;
     }
 
     @Override
-    public ProductDto findProductById(Long id) {
+    public ProductDto findProductById(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(id, "Product not found"));
+                new EntityNotFoundException(id.toString(), "Product not found"));
 
-        return new ProductDto(
-                product.getId(),
-                product.getTitle(),
-                product.getCost(),
-                product.getDescription(),
-                new CategoryDto(product.getCategory().getId(), product.getCategory().getTitle()),
-                new BrandDto(product.getBrand().getId(), product.getBrand().getTitle()),
-                product.getPictures().stream()
-                        .map(Picture::getId)
-                        .collect(Collectors.toList())
-        );
+        return ProductDto.fromProduct(product);
     }
 
     @Override
@@ -107,21 +85,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void saveProduct(ProductDto productDto) {
-        Product product = (productDto.getId() != null) ? productRepository.findById(productDto.getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException(productDto.getId(), "Product not found"))
-                : new Product();
-
-        product.setTitle(productDto.getTitle());
-        product.setCost(productDto.getCost());
-        product.setDescription(productDto.getDescription());
-        product.setCategory(categoryRepository.findById(productDto.getCategoryDto().getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException(productDto.getCategoryDto().getId(), "Category not found")));
-        product.setBrand(brandRepository.findById(productDto.getBrandDto().getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException(productDto.getBrandDto().getId(), "Brand not found")));
-
+    	Product product = productDto.toProduct();
+    	productRepository.findProductById(product.getId()).ifPresent(p -> product.setPictures(p.getPictures()));
+    	
         if (productDto.getNewPictures() != null) {
             for (MultipartFile newPicture : productDto.getNewPictures()) {
                 try {
@@ -131,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
                     product.addPicture(new Picture(
                             newPicture.getOriginalFilename(),
                             newPicture.getContentType(),
-                            pictureService.savePicture(newPicture.getBytes())));
+                            pictureService.uploadPicture(newPicture.getBytes())));
                 } catch (IOException e) {
                     throw new BadRequestException("Upload pictures error");
                 }
@@ -142,7 +108,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(Long id) {
+    @Transactional
+    public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
 }

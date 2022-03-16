@@ -6,9 +6,10 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Product name</th>
-        <th scope="col">Count</th>
-        <th scope="col">Gift wrap</th>
         <th scope="col">Price</th>
+        <th scope="col">Count</th>
+        <th scope="col">Total price</th>
+        <th scope="col">Gift wrap</th>
         <th scope="col">Actions</th>
       </tr>
       </thead>
@@ -16,14 +17,15 @@
 
       <tr *ngFor="let lineItem of content?.lineItems; index as i">
         <th scope="row">{{i + 1}}</th>
-        <td>{{lineItem.productDto.title}}</td>
+        <td>{{lineItem.productTitle}}</td>
+        <td>{{lineItem.cost}}</td>
         <td>
           <input type="number" value="{{lineItem.qty}}" [(ngModel)]="lineItem.qty" class="form-control w-25"/>
         </td>
+        <td>{{lineItem.totalCost}}</td>
         <td>
           <input type="checkbox" value="{{lineItem.giftWrap}}" [(ngModel)]="lineItem.giftWrap" class="form-check-input">
         </td>
-        <td>{{lineItem.itemTotal}}</td>
         <td>
           <a class="btn btn-success me-2" (click)="updateLineItem(lineItem)"><i class="fas fa-check-circle"></i></a>
           <a class="btn btn-danger" (click)="removeLineItem(lineItem)"><i class="far fa-trash-alt"></i></a>

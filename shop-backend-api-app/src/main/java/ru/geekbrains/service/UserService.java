@@ -1,7 +1,6 @@
 package ru.geekbrains.service;
 
-import javassist.NotFoundException;
-import ru.geekbrains.controller.dto.OrderDto;
+import ru.geekbrains.dto.OrderDto;
 
 import java.util.List;
 

@@ -3,9 +3,11 @@ package ru.geekbrains.persist.model;
 import lombok.*;
 
 import javax.persistence.*;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @NamedEntityGraphs({
         @NamedEntityGraph(
@@ -22,6 +24,12 @@ import java.util.List;
                         @NamedAttributeNode("brand"),
                         @NamedAttributeNode("pictures")
                 }
+        ),
+        @NamedEntityGraph(
+                name = "productByIdWithPicturesEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode("pictures")
+                }
         )
 })
 @Entity
@@ -29,11 +37,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Product extends AbstractPersistentObject {
 
     @Column(name = "title", nullable = false, length = 512)
     private String title;
@@ -53,10 +57,10 @@ public class Product {
     private Brand brand;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Picture> pictures = new ArrayList<>();
+    private Set<Picture> pictures = new HashSet<Picture>();
 
-    public Product(Long id, String title, BigDecimal cost, String description, Category category, Brand brand) {
-        this.id = id;
+    public Product(UUID id, String title, BigDecimal cost, String description, Category category, Brand brand) {
+        super(id);
         this.title = title;
         this.cost = cost;
         this.description = description;

@@ -3,28 +3,32 @@ package ru.geekbrains.persist.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Category {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Category extends AbstractPersistentObject {
 
     @Column(name = "title",
             nullable = false)
     private String title;
 
     @OneToMany(mappedBy = "category")
-    private List<Product> products;
+    private Set<Product> products;
 
-    public Category(Long id, String title) {
-        this.id = id;
+    public Category(String title) {
+		super();
+		this.title = title;
+	}
+    
+    public Category(UUID id, String title) {
+        super(id);
         this.title = title;
     }
+
+
 }

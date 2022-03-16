@@ -2,7 +2,7 @@ package ru.geekbrains.controller.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import ru.geekbrains.controller.dto.CategoryDto;
+import ru.geekbrains.dto.CategoryDto;
 
 @Component
 public class StringToCategoryDtoConverter implements Converter<String, CategoryDto> {
@@ -13,7 +13,7 @@ public class StringToCategoryDtoConverter implements Converter<String, CategoryD
 
         if (!s.isBlank()) {
             String[] arr = s.split(";");
-            categoryDto = new CategoryDto(Long.parseLong(arr[0]), arr[1]);
+            categoryDto = new CategoryDto(arr[0], arr[1]);
         }
         return categoryDto;
     }

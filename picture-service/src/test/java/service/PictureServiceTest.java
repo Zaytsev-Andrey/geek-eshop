@@ -34,7 +34,7 @@ public class PictureServiceTest {
     @Test
     public void testPictureService() {
         byte[] expectedPicture = {1};
-        String uuid = pictureService.savePicture(expectedPicture);
+        String uuid = pictureService.uploadPicture(expectedPicture);
         assertFalse(uuid.isBlank());
         assertTrue(Files.exists(Path.of(storagePath, uuid)));
 

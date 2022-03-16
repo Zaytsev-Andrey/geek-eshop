@@ -1,7 +1,6 @@
 package ru.geekbrains.service;
 
-import ru.geekbrains.controller.dto.RoleDto;
-import ru.geekbrains.persist.model.Role;
+import ru.geekbrains.dto.RoleDto;
 
 import java.util.List;
 

@@ -6,6 +6,7 @@ import ru.geekbrains.persist.model.Product;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 
 public class ProductSpecification {
@@ -27,7 +28,7 @@ public class ProductSpecification {
                 criteriaBuilder.equal(root.get("category").get("id"), categoryId);
     }
 
-    public static Specification<Product> categoryContains(List<Long> categoriesId) {
+    public static Specification<Product> categoryContains(List<UUID> categoriesId) {
         return (root, criteriaQuery, criteriaBuilder) ->
                 root.get("category").get("id").in(categoriesId);
     }

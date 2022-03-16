@@ -33,13 +33,13 @@ public class PictureServiceFileImp implements PictureService {
     }
 
     @Override
-    public Optional<String> getPictureContentTypeById(long id) {
+    public Optional<String> getPictureContentTypeById(UUID id) {
         return pictureRepository.findById(id)
                 .map(Picture::getContentType);
     }
 
-    @Override
-    public byte[] downloadPictureById(long id) {
+	@Override
+    public byte[] downloadPictureById(UUID id) {
         return pictureRepository.findById(id)
                 .map(picture -> Path.of(storagePath, picture.getStorageUUID()))
                 .filter(Files::exists)
@@ -55,7 +55,7 @@ public class PictureServiceFileImp implements PictureService {
     }
 
     @Override
-    public String savePicture(byte[] picture) {
+    public String uploadPicture(byte[] picture) {
         String fileName = UUID.randomUUID().toString();
         logger.info("Storage path: '{}'", storagePath);
         try (OutputStream os = Files.newOutputStream(Path.of(storagePath, fileName))) {
@@ -69,7 +69,7 @@ public class PictureServiceFileImp implements PictureService {
 
     @Override
     @Transactional
-    public void deletePictureById(long id) {
+    public void deletePictureById(UUID id) {
         Optional<Picture> pictureOpt = pictureRepository.findById(id);
         if (pictureOpt.isPresent()) {
             try {

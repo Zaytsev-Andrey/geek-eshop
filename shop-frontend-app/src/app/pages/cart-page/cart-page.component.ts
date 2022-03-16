@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CartService} from "../../services/cart.service";
 import {AllCartDto} from "../../model/all-cart-dto";
 import {LineItem} from "../../model/line-item";
-import {AddLineItemDto} from "../../model/add-line-item-dto";
+import {LineItemDto} from "../../model/line-item-dto";
 import {OrderService} from "../../services/order.service";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
@@ -33,10 +33,8 @@ export class CartPageComponent implements OnInit {
   }
 
   updateLineItem(lineItem: LineItem) {
-    this.cartService.updateLineItem(new AddLineItemDto(lineItem.productId,
-      lineItem.color,
-      lineItem.material,
-      lineItem.saveGiftWrap,
+    this.cartService.updateLineItem(new LineItemDto(lineItem.id,
+      lineItem.changeGiftWrap,
       lineItem.giftWrap,
       lineItem.qty))
       .subscribe(res => {
@@ -45,10 +43,8 @@ export class CartPageComponent implements OnInit {
   }
 
   removeLineItem(lineItem: LineItem) {
-    this.cartService.removeLineItem(new AddLineItemDto(lineItem.productId,
-      lineItem.color,
-      lineItem.material,
-      lineItem.saveGiftWrap,
+    this.cartService.removeLineItem(new LineItemDto(lineItem.id,
+      lineItem.changeGiftWrap,
       lineItem.giftWrap,
       lineItem.qty))
       .subscribe(res => {

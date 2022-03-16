@@ -3,7 +3,8 @@ package ru.geekbrains.persist.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "roles")
@@ -11,11 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Role extends AbstractPersistentObject {
 
     @Column(name = "role",
             nullable = false)
@@ -28,10 +25,11 @@ public class Role {
                     foreignKey = @ForeignKey(name = "fk_role_id")),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> users;
+    private Set<User> users;
 
-    public Role(Long id, String role) {
-        this.id = id;
+    public Role(UUID id, String role) {
+        super(id);
         this.role = role;
     }
+    
 }

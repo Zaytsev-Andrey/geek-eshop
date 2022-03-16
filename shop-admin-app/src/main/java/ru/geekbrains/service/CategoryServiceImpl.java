@@ -1,15 +1,14 @@
 package ru.geekbrains.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.dto.CategoryDto;
-import ru.geekbrains.controller.exception.BadRequestException;
+import org.springframework.transaction.annotation.Transactional;
+
+import ru.geekbrains.dto.CategoryDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.param.CategoryListParam;
 import ru.geekbrains.persist.model.Category;
@@ -18,6 +17,7 @@ import ru.geekbrains.persist.specification.CategorySpecification;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,15 +36,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> findAllCategories() {
         return categoryRepository.findAll().stream()
-                .map(category -> new CategoryDto(category.getId(), category.getTitle()))
+                .map(category -> CategoryDto.fromCategory(category))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CategoryDto findCategoryById(Long id) {
+    public CategoryDto findCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id, "Category not found"));
-        return new CategoryDto(category.getId(), category.getTitle());
+                .orElseThrow(() -> new EntityNotFoundException(id.toString(), "Category not found"));
+        return CategoryDto.fromCategory(category);
     }
 
     @Override
@@ -69,12 +69,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void saveCategory(CategoryDto categoryDTO) {
-        Category category = new Category(categoryDTO.getId(), categoryDTO.getTitle());
-        categoryRepository.save(category);
+        categoryRepository.save(categoryDTO.toCategory());
     }
 
     @Override
-    public void deleteCategoryById(Long id) {
+    @Transactional
+    public void deleteCategoryById(UUID id) {
         categoryRepository.deleteById(id);
     }
 }

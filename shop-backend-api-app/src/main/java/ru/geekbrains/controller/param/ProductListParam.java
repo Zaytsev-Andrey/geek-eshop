@@ -11,7 +11,7 @@ import java.util.List;
 public class ProductListParam {
 
     private String titleFilter;
-    private List<Long> categoriesFilter;
+    private List<String> categoriesFilter;
     private Long brandFilter;
     private BigDecimal minCostFilter;
     private BigDecimal maxCostFilter;

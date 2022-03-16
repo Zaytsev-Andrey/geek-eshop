@@ -1,4 +1,4 @@
-package ru.geekbrains.controller.dto;
+package ru.geekbrains.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AddLineItemDto {
 
-    private Long productId;
-
-    private String color;
-
-    private String material;
+    private String productId;
 
     private boolean saveGiftWrap;
 

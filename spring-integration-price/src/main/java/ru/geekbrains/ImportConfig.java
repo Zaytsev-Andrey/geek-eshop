@@ -127,7 +127,7 @@ public class ImportConfig {
             try {
                 Path path = Path.of(sourcePath, f);
                 byte[] pictureFile = Files.readAllBytes(path);
-                String storageUUID = pictureService.savePicture(pictureFile);
+                String storageUUID = pictureService.uploadPicture(pictureFile);
                 picture = new Picture(f, Files.probeContentType(path), storageUUID);
             } catch (IOException e) {
                 logger.error("File '{}' not found", f);

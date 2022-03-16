@@ -1,14 +1,16 @@
 package ru.geekbrains.service;
 
 import java.util.Optional;
+import java.util.UUID;
+
 
 public interface PictureService {
 
-    Optional<String> getPictureContentTypeById(long id);
+    Optional<String> getPictureContentTypeById(UUID id);
+    
+    byte[] downloadPictureById(UUID id);
 
-    byte[] downloadPictureById(long id);
+    String uploadPicture(byte[] picture);
 
-    String savePicture(byte[] picture);
-
-    void deletePictureById(long id);
+    void deletePictureById(UUID id);
 }

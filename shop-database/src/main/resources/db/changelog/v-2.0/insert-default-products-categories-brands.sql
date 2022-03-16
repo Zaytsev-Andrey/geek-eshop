@@ -2,8 +2,11 @@ INSERT INTO `categories` (`title`)
     VALUE   ('Desktop'), ('Laptop'), ('Monitor'), ('Printer'), ('Keyboard'), ('Mouse'), ('Soft');
 GO
 
-INSERT INTO `brands` (`title`)
-VALUE ('DEXP'), ('ASUS'), ('HP'), ('Logitech');
+INSERT INTO `brands` (`id`, `title`)
+VALUE ('b214ad04-10a5-4fb7-bbb2-8b9256d69682', 'DEXP'), 
+('1c4b8ccb-2db1-430b-8c6e-b815c973ac3c', 'ASUS'), 
+('5ecef127-1cac-4b65-90ac-6580ee452e17', 'HP'), 
+('19d87ddf-0761-488d-b090-efba6e58b9ac', 'Logitech');
 GO
 
 INSERT INTO `products`(`title`, `cost`, `category_id`, `brand_id`)

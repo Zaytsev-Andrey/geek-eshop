@@ -13,11 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Picture {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Picture extends AbstractPersistentObject {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -36,6 +32,5 @@ public class Picture {
         this.name = name;
         this.contentType = contentType;
         this.storageUUID = storageUUID;
-        this.product = product;
     }
 }

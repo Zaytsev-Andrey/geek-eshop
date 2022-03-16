@@ -1,9 +1,9 @@
 package ru.geekbrains.service;
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.dto.OrderDto;
+
+import ru.geekbrains.dto.OrderDto;
 import ru.geekbrains.exception.UserNotFoundException;
 import ru.geekbrains.persist.model.User;
 import ru.geekbrains.persist.repository.UserRepository;
@@ -27,15 +27,10 @@ public class UserServiceImpl implements UserService {
         User currentUser = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
 
         return currentUser.getOrders().stream()
-                .map(order -> new OrderDto(
-                        order.getId(),
-                        dateFormat.format(order.getCreationDate()),
-                        order.getPrice(),
-                        order.getStatus().getName()
-                ))
+                .map(order -> OrderDto.fromOrder(order))
                 .collect(Collectors.toList());
     }
 }

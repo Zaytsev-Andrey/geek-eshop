@@ -4,7 +4,6 @@
     <table class="table table-striped">
       <thead>
       <tr>
-        <th scope="col">Id</th>
         <th scope="col">Date</th>
         <th scope="col">Price</th>
         <th scope="col">Status</th>
@@ -13,8 +12,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let order of orders">
-        <th scope="row">{{order.id}}</th>
-        <td>{{order.orderDate}}</td>
+        <td>{{order.creationDate}}</td>
         <td>{{order.price}}</td>
         <td>{{order.status}}</td>
         <td>

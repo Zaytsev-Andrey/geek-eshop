@@ -1,12 +1,16 @@
 package ru.geekbrains.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.controller.dto.BrandDto;
+import org.springframework.transaction.annotation.Transactional;
+
+import ru.geekbrains.dto.BrandDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.param.BrandListParam;
 import ru.geekbrains.persist.repository.BrandRepository;
@@ -15,10 +19,13 @@ import ru.geekbrains.persist.model.Brand;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class BrandServiceImpl implements BrandService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BrandServiceImpl.class);
 
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_COUNT = 5;
@@ -33,14 +40,15 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public List<BrandDto> findAllBrands() {
         return brandRepository.findAll().stream()
-                .map(brand -> new BrandDto(brand.getId(), brand.getTitle()))
+                .map(brand -> BrandDto.fromBrand(brand))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public BrandDto findBrandById(Long id) {
-        Brand brand = brandRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, "Brand not found"));
-        return new BrandDto(brand.getId(), brand.getTitle());
+    public BrandDto findBrandById(UUID id) {
+    	logger.info("ID: {}", id);
+        Brand brand = brandRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id.toString(), "Brand not found"));
+        return BrandDto.fromBrand(brand);
     }
 
     @Override
@@ -66,11 +74,12 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void saveBrand(BrandDto brandDto) {
-        brandRepository.save(new Brand(brandDto.getId(), brandDto.getTitle()));
+        brandRepository.save(brandDto.toBrand());
     }
 
     @Override
-    public void deleteBrandById(Long id) {
+    @Transactional
+    public void deleteBrandById(UUID id) {
         brandRepository.deleteById(id);
     }
 }

@@ -20,18 +20,14 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetail {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class OrderDetail extends AbstractPersistentObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "count", nullable = false)
-    private Integer count;
+    private Integer qty;
 
     @Column(name = "cost", nullable = false)
     private BigDecimal cost;
@@ -45,7 +41,7 @@ public class OrderDetail {
 
     public OrderDetail(Product product, Integer count, BigDecimal cost, Boolean giftWrap) {
         this.product = product;
-        this.count = count;
+        this.qty = count;
         this.cost = cost;
         this.giftWrap = giftWrap;
     }

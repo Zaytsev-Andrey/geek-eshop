@@ -43,7 +43,7 @@ export class OrderPageComponent implements OnInit {
     }
   }
 
-  removeOrder(id: number) {
+  removeOrder(id: string) {
     this.orderService.removeOrder(id)
       .then(res => {
         this.orders = res;

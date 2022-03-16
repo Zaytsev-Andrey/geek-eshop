@@ -1,10 +1,10 @@
 package ru.geekbrains.persist.model;
 
 import lombok.*;
-import ru.geekbrains.persist.model.Role;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 @NamedEntityGraphs({
         @NamedEntityGraph(
                 name = "userWithRolesEntityGraph",
@@ -33,11 +33,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends AbstractPersistentObject {
 
     @Column(name = "firstname",
             nullable = false)
@@ -63,13 +59,13 @@ public class User {
                     foreignKey = @ForeignKey(name = "fk_user_id")),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    private Set<Order> orders;
 
-    public User(Long id, String firstname, String lastname, String email, String password, List<Role> roles) {
-        this.id = id;
+    public User(UUID id, String firstname, String lastname, String email, String password, Set<Role> roles) {
+        super(id);
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

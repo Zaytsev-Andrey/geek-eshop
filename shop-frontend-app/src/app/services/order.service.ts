@@ -28,11 +28,11 @@ export class OrderService {
     return this.http.put<OrderDetail[]>(`/api/v1/order`, orderDetail).toPromise();
   }
 
-  public removeOrder(id: number) {
+  public removeOrder(id: string) {
     return this.http.delete<Order[]>(`/api/v1/order/${id}`).toPromise();
   }
 
-  public removeOrderDetail(id: number) {
+  public removeOrderDetail(id: string) {
     return this.http.delete<OrderDetail[]>(`/api/v1/order/detail/${id}`).toPromise();
   }
 }

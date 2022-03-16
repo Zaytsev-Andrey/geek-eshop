@@ -1,19 +1,22 @@
 package ru.geekbrains.controller;
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.OrderDto;
+
+import ru.geekbrains.dto.AllCartDto;
+import ru.geekbrains.dto.CartItemDto;
+import ru.geekbrains.dto.OrderDetailDto;
+import ru.geekbrains.dto.OrderDto;
 import ru.geekbrains.persist.model.Order;
 import ru.geekbrains.service.CartService;
 import ru.geekbrains.service.OrderService;
 import ru.geekbrains.service.UserService;
-import ru.geekbrains.service.dto.LineItem;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
@@ -39,20 +42,25 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public List<OrderDetailDto> getOrderDetails(@PathVariable("id") Long id) {
+    public List<OrderDetailDto> getOrderDetails(@PathVariable("id") UUID id) {
         return orderService.getOrderDetails(id);
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json")
-    public List<LineItem> createOrder(Authentication authentication) {
-        if (!cartService.isEmpty()) {
-            orderService.save(cartService.getLineItems(),
-                    cartService.getSubTotal(),
-                    authentication.getName());
-            cartService.clear();
-        }
-
-        return cartService.getLineItems();
+    public AllCartDto createOrder(Authentication authentication) {
+    	return orderService.save(authentication.getName());
+//        if (!cartService.isEmpty()) {
+//            orderService.save(cartService.getLineItems().stream()
+//            		.map(CartItemDto::fromCartItem)
+//            		.collect(Collectors.toList()),
+//                    cartService.getSubTotal(),
+//                    authentication.getName());
+//            cartService.clear();
+//        }
+//
+//        return cartService.getLineItems().stream()
+//        		.map(CartItemDto::fromCartItem)
+//        		.collect(Collectors.toList());
     }
 
     @PutMapping(produces = "application/json", consumes = "application/json")
@@ -63,7 +71,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public List<OrderDto> removeOrder(@PathVariable("id") Long id,
+    public List<OrderDto> removeOrder(@PathVariable("id") UUID id,
                                       Authentication authentication) {
 
         orderService.removeOrder(id);
@@ -73,7 +81,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/detail/{id}")
-    public List<OrderDetailDto> removeOrderDetail(@PathVariable("id") Long id) {
+    public List<OrderDetailDto> removeOrderDetail(@PathVariable("id") UUID id) {
         Order order = orderService.removeOrderDetail(id);
 
         return orderService.getOrderDetails(order.getId());

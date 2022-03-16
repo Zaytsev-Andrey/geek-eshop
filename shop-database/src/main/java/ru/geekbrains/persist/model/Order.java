@@ -7,9 +7,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @NamedEntityGraph(
         name = "orderWithDetailsEntityGraph",
@@ -34,11 +34,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Order extends AbstractPersistentObject {
 
     @Column(name = "creation_date", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,7 +53,7 @@ public class Order {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetails = new ArrayList<>();
+    private Set<OrderDetail> orderDetails = new HashSet<OrderDetail>();
 
     public Order(BigDecimal price, OrderStatus status, User user) {
         this.price = price;

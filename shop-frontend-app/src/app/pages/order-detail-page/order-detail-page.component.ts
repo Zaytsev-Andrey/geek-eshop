@@ -35,7 +35,7 @@ export class OrderDetailPageComponent implements OnInit {
     })
   }
 
-  removeOrderDetail(id: number) {
+  removeOrderDetail(id: string) {
     this.orderService.removeOrderDetail(id)
       .then(res => {
         this.orderDetails = res;
