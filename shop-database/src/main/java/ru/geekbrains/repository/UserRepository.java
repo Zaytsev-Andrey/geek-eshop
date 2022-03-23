@@ -1,9 +1,9 @@
-package ru.geekbrains.persist.repository;
+package ru.geekbrains.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import ru.geekbrains.persist.model.User;
+import ru.geekbrains.persist.User;
 
 import java.util.Optional;
 import java.util.UUID;

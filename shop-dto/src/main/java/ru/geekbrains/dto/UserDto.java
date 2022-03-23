@@ -1,7 +1,7 @@
 package ru.geekbrains.dto;
 
 import lombok.*;
-import ru.geekbrains.persist.model.User;
+import ru.geekbrains.persist.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-
-    private String id;
+public class UserDto extends AbstractPersistentDto{
 
     @NotBlank
     private String firstname;
@@ -37,7 +35,7 @@ public class UserDto {
     private Set<RoleDto> rolesDto;
 
     public UserDto(String id, String firstname, String lastname, String email, Set<RoleDto> rolesDto) {
-        this.id = id;
+        this.setId(id);
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
@@ -46,8 +44,8 @@ public class UserDto {
     
     public User toUser() {
     	User user = new User();
-    	if (id != null && !id.isBlank()) {
-			user.setId(UUID.fromString(id));
+    	if (this.getId() != null && !this.getId().isBlank()) {
+			user.setId(UUID.fromString(this.getId()));
 		}
     	user.setFirstname(firstname);
     	user.setLastname(lastname);

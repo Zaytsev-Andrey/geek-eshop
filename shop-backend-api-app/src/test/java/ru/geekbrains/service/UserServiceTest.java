@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.geekbrains.controller.dto.OrderDetailDto;
 import ru.geekbrains.controller.dto.OrderDto;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.Order;
+import ru.geekbrains.persist.OrderStatus;
+import ru.geekbrains.persist.User;
+import ru.geekbrains.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.Date;

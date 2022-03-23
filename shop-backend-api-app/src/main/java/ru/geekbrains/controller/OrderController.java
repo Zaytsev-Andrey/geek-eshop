@@ -6,17 +6,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import ru.geekbrains.dto.AllCartDto;
-import ru.geekbrains.dto.CartItemDto;
 import ru.geekbrains.dto.OrderDetailDto;
 import ru.geekbrains.dto.OrderDto;
-import ru.geekbrains.persist.model.Order;
+import ru.geekbrains.persist.Order;
 import ru.geekbrains.service.CartService;
 import ru.geekbrains.service.OrderService;
 import ru.geekbrains.service.UserService;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @PreAuthorize("isAuthenticated()")
 @RestController

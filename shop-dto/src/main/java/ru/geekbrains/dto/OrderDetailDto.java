@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.geekbrains.persist.model.OrderDetail;
+import ru.geekbrains.persist.OrderDetail;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)

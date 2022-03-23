@@ -32,7 +32,7 @@ public class BrandController {
     @GetMapping
     public String showBrandListWithPaginationAndFilter(Model model, BrandListParam listParam) {
         logger.info("Getting page of brands with filter");
-        model.addAttribute("brands", brandService.findBrandsWithFilter(listParam));
+        model.addAttribute("brandDtos", brandService.findBrandsWithFilter(listParam));
         return "brands";
     }
 

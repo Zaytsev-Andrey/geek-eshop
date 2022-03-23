@@ -1,7 +1,7 @@
 package ru.geekbrains.dto;
 
 import lombok.*;
-import ru.geekbrains.persist.model.Category;
+import ru.geekbrains.persist.Category;
 
 import java.util.UUID;
 
@@ -16,18 +16,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class CategoryDto {
-
-    private String id;
+public class CategoryDto extends AbstractPersistentDto {
 
     @NotBlank
     private String title;
 
+    public CategoryDto(String id, String title) {
+        super(id);
+        this.title = title;
+    }
+
     public Category toCategory() {
     	Category category = new Category();
-    	if (id != null && !id.isBlank()) {
-			category.setId(UUID.fromString(id));
+    	if (this.getId() != null && !this.getId().isBlank()) {
+			category.setId(UUID.fromString(this.getId()));
 		}
     	category.setTitle(title);
     	return category;

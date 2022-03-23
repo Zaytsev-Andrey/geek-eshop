@@ -9,9 +9,10 @@ import org.springframework.stereotype.Service;
 import ru.geekbrains.dto.ProductDto;
 import ru.geekbrains.controller.param.ProductListParam;
 import ru.geekbrains.exception.ProductNotFoundException;
-import ru.geekbrains.persist.model.Product;
-import ru.geekbrains.persist.repository.ProductRepository;
-import ru.geekbrains.persist.specification.ProductSpecification;
+import ru.geekbrains.mapper.Mapper;
+import ru.geekbrains.persist.Product;
+import ru.geekbrains.repository.ProductRepository;
+import ru.geekbrains.specification.ProductSpecification;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,15 +25,18 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
 
+    private Mapper<Product, ProductDto> productMapper;
+
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, Mapper<Product, ProductDto> productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     @Override
     public ProductDto findById(UUID id) {
         return productRepository.findById(id)
-                .map(ProductDto::fromProduct)
+                .map(productMapper::toDto)
                 .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
@@ -71,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll(specification,
                 PageRequest.of(Optional.ofNullable(listParam.getPage()).orElse(1) - 1,
                         Optional.ofNullable(listParam.getSize()).orElse(5), sort))
-                .map(ProductDto::fromProduct);
+                .map(productMapper::toDto);
     }
 
 	@Override

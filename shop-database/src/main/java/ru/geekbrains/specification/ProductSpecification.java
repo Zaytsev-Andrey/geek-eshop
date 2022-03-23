@@ -1,8 +1,7 @@
-package ru.geekbrains.persist.specification;
+package ru.geekbrains.specification;
 
 import org.springframework.data.jpa.domain.Specification;
-import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.Product;
 
 import java.math.BigDecimal;
 import java.util.List;

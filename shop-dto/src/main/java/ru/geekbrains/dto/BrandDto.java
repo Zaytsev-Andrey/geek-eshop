@@ -1,7 +1,7 @@
 package ru.geekbrains.dto;
 
 import lombok.*;
-import ru.geekbrains.persist.model.Brand;
+import ru.geekbrains.persist.Brand;
 
 import java.util.UUID;
 
@@ -16,18 +16,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class BrandDto {
-
-    private String id;
+public class BrandDto extends AbstractPersistentDto {
 
     @NotBlank
     private String title;
-    
+
+    public BrandDto(String id, String title) {
+        super(id);
+        this.title = title;
+    }
+
     public Brand toBrand() {
     	Brand brand = new Brand();
-    	if (id != null && !id.isBlank()) {
-			brand.setId(UUID.fromString(id));
+    	if (this.getId() != null && !this.getId().isBlank()) {
+			brand.setId(UUID.fromString(this.getId()));
 		}
     	brand.setTitle(title);
     	return brand;

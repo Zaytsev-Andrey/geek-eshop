@@ -19,10 +19,10 @@ import org.springframework.integration.jpa.dsl.JpaUpdatingOutboundEndpointSpec;
 import org.springframework.integration.jpa.support.PersistMode;
 import org.springframework.messaging.MessageHandler;
 import ru.geekbrains.dto.CsvProduct;
-import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
-import ru.geekbrains.persist.model.Picture;
-import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.Brand;
+import ru.geekbrains.persist.Category;
+import ru.geekbrains.persist.Picture;
+import ru.geekbrains.persist.Product;
 import ru.geekbrains.service.PictureService;
 
 import javax.persistence.EntityManagerFactory;

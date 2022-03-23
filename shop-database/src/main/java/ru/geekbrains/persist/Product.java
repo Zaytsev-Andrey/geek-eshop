@@ -1,6 +1,10 @@
-package ru.geekbrains.persist.model;
+package ru.geekbrains.persist;
 
 import lombok.*;
+import ru.geekbrains.persist.AbstractPersistentObject;
+import ru.geekbrains.persist.Brand;
+import ru.geekbrains.persist.Category;
+import ru.geekbrains.persist.Picture;
 
 import javax.persistence.*;
 

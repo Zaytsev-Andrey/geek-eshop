@@ -11,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.dto.CategoryDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.param.CategoryListParam;
-import ru.geekbrains.persist.model.Category;
-import ru.geekbrains.persist.repository.CategoryRepository;
-import ru.geekbrains.persist.specification.CategorySpecification;
+import ru.geekbrains.mapper.Mapper;
+import ru.geekbrains.persist.Category;
+import ru.geekbrains.repository.CategoryRepository;
+import ru.geekbrains.specification.CategorySpecification;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,15 +29,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryRepository categoryRepository;
 
+    private Mapper<Category, CategoryDto> categoryMapper;
+
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, Mapper<Category, CategoryDto> categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     @Override
     public List<CategoryDto> findAllCategories() {
         return categoryRepository.findAll().stream()
-                .map(category -> CategoryDto.fromCategory(category))
+                .map(category -> categoryMapper.toDto(category))
                 .collect(Collectors.toList());
     }
 
@@ -44,11 +48,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto findCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id.toString(), "Category not found"));
-        return CategoryDto.fromCategory(category);
+        return categoryMapper.toDto(category);
     }
 
     @Override
-    public Page<Category> findCategoryWithFilter(CategoryListParam listParam) {
+    public Page<CategoryDto> findCategoryWithFilter(CategoryListParam listParam) {
         Specification<Category> specification = Specification.where(null);
 
         if (listParam.getTitleFilter() != null && !listParam.getTitleFilter().isBlank()) {
@@ -63,13 +67,13 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryRepository.findAll(specification, PageRequest.of(
                 Optional.ofNullable(listParam.getPage()).orElse(DEFAULT_PAGE_NUMBER) - 1,
-                Optional.ofNullable(listParam.getSize()).orElse(DEFAULT_PAGE_COUNT),
-                sort));
+                        Optional.ofNullable(listParam.getSize()).orElse(DEFAULT_PAGE_COUNT), sort))
+                .map(categoryMapper::toDto);
     }
 
     @Override
     public void saveCategory(CategoryDto categoryDTO) {
-        categoryRepository.save(categoryDTO.toCategory());
+        categoryRepository.save(categoryMapper.toEntity(categoryDTO));
     }
 
     @Override

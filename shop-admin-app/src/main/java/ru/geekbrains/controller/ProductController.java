@@ -3,6 +3,7 @@ package ru.geekbrains.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,7 +64,8 @@ public class ProductController {
     @GetMapping
     public String showProductListWithPaginationAndFilter(Model model, ProductListParam listParam) {
         logger.info("Getting page of products with filter");
-        model.addAttribute("products", productService.findProductsWithFilter(listParam));
+        Page<ProductDto> productDtos = productService.findProductsWithFilter(listParam);
+        model.addAttribute("productDtos", productDtos);
         return "products";
     }
 

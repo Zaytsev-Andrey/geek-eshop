@@ -2,8 +2,8 @@ package ru.geekbrains.dto;
 
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.geekbrains.persist.model.Picture;
-import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.Picture;
+import ru.geekbrains.persist.Product;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProductDto {
-
-    private String id;
+public class ProductDto extends AbstractPersistentDto {
 
     @NotBlank
     private String title;
@@ -43,7 +41,7 @@ public class ProductDto {
 
     public ProductDto(String id, String title, String cost, String description, CategoryDto categoryDto,
                       BrandDto brandDto, Set<UUID> pictures) {
-        this.id = id;
+        this.setId(id);
         this.title = title;
         this.cost = cost;
         this.description = description;
@@ -54,8 +52,8 @@ public class ProductDto {
     
     public Product toProduct() {
     	Product product = new Product();
-    	if (id != null && !id.isBlank()) {
-			product.setId(UUID.fromString(id));
+    	if (this.getId() != null && !this.getId().isBlank()) {
+			product.setId(UUID.fromString(this.getId()));
 		}
     	product.setTitle(title);
     	product.setCost(new BigDecimal(cost));

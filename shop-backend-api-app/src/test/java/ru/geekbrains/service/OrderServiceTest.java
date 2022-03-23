@@ -8,10 +8,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import ru.geekbrains.controller.dto.OrderDetailDto;
 import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.repository.OrderDetailRepository;
-import ru.geekbrains.persist.repository.OrderRepository;
-import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.*;
+import ru.geekbrains.repository.OrderDetailRepository;
+import ru.geekbrains.repository.OrderRepository;
+import ru.geekbrains.repository.UserRepository;
 import ru.geekbrains.service.dto.LineItem;
 
 import java.math.BigDecimal;

@@ -1,11 +1,9 @@
 package ru.geekbrains.service;
 
 import ru.geekbrains.dto.AllCartDto;
-import ru.geekbrains.dto.CartItemDto;
 import ru.geekbrains.dto.OrderDetailDto;
-import ru.geekbrains.persist.model.Order;
+import ru.geekbrains.persist.Order;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 

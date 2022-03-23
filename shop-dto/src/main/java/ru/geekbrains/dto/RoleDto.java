@@ -1,7 +1,7 @@
 package ru.geekbrains.dto;
 
 import lombok.*;
-import ru.geekbrains.persist.model.Role;
+import ru.geekbrains.persist.Role;
 
 import java.util.UUID;
 
@@ -13,18 +13,20 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class RoleDto {
+public class RoleDto extends AbstractPersistentDto {
 
-    private String id;
+	public RoleDto(String id, String role) {
+		super(id);
+		this.role = role;
+	}
 
-    @NotBlank
+	@NotBlank
     private String role;
     
     public Role toRole() {
     	Role role = new Role();
-    	if (id != null && !id.isBlank()) {
-			role.setId(UUID.fromString(id));
+    	if (this.getId() != null && !this.getId().isBlank()) {
+			role.setId(UUID.fromString(this.getId()));
 		}
     	role.setRole(this.role);
     	return role;

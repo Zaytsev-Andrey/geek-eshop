@@ -1,7 +1,7 @@
-package ru.geekbrains.persist.specification;
+package ru.geekbrains.specification;
 
 import org.springframework.data.jpa.domain.Specification;
-import ru.geekbrains.persist.model.Category;
+import ru.geekbrains.persist.Category;
 
 public class CategorySpecification {
 

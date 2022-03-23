@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 
 import ru.geekbrains.dto.OrderDto;
 import ru.geekbrains.exception.UserNotFoundException;
-import ru.geekbrains.persist.model.User;
-import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.User;
+import ru.geekbrains.repository.UserRepository;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.dto.RoleDto;
 import ru.geekbrains.dto.UserDto;
 import ru.geekbrains.controller.param.UserListParam;
+import ru.geekbrains.persist.User;
 import ru.geekbrains.service.RoleService;
 import ru.geekbrains.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -46,7 +48,7 @@ public class UserController {
     @GetMapping
     public String showUserListWithPaginationAndFilter(Model model, UserListParam userListParams) {
         logger.info("Getting page of users with filter");
-        model.addAttribute("users", userService.findUsersWithFilter(userListParams));
+        model.addAttribute("userDtos", userService.findUsersWithFilter(userListParams));
         return "users";
     }
 
@@ -71,7 +73,11 @@ public class UserController {
         // if password not equals confirm password
         boolean passwordError = !userDto.getPassword().equals(userDto.getConfirmPassword());
         // if E-mail already exist
-        boolean emailError = userService.findUserByEmail(userDto.getEmail()).isPresent();
+        boolean emailError = false;
+        Optional<User> existUser = userService.findUserByEmail(userDto.getEmail());
+        if (existUser.isPresent() && !existUser.get().getId().toString().equals(userDto.getId())) {
+            emailError = true;
+        }
 
         if (result.hasErrors() || passwordError || emailError && userDto.getId().isBlank()) {
             if (passwordError) {

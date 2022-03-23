@@ -31,7 +31,7 @@ public class CategoryController {
     @GetMapping
     public String showCategoryListWithPaginationAndFilter(Model model, CategoryListParam listParam) {
         logger.info("Getting page of categories with filter");
-        model.addAttribute("categories", categoryService.findCategoryWithFilter(listParam));
+        model.addAttribute("categoryDtos", categoryService.findCategoryWithFilter(listParam));
         return "categories";
     }
 

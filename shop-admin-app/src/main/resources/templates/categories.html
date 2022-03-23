@@ -35,18 +35,20 @@
             <table id="categories" class="table table-bordered my-2">
                 <thead>
                 <tr>
-                    <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col">#</th>
                     <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('Title', 'title')">Title</th>
+                    <th scope="col" th:replace="fragments/doc_category_sort :: sort_header('ID', 'id')">ID</th>
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${categories.hasContent()}" th:each="category : ${categories.content}">
-                    <th scope="row" th:text="${category.id}">1</th>
-                    <td th:text="${category.title}">title</td>
+                <tr th:if="${categoryDtos.hasContent()}" th:each="categoryDto,iter : ${categoryDtos.content}">
+                    <th scope="row" th:text="${iter.index + 1}">1</th>
+                    <td th:text="${categoryDto.title}">title</td>
+                    <td th:text="${categoryDto.id}">1</td>
                     <td>
-                        <a class="btn btn-success" th:href="@{/category/{id}(id=${category.id})}"><i class="fas fa-edit"></i></a>
-                        <form class="d-inline" th:method="delete" th:action="@{/category/{id}(id=${category.id})}">
+                        <a class="btn btn-success" th:href="@{/category/{id}(id=${categoryDto.id})}"><i class="fas fa-edit"></i></a>
+                        <form class="d-inline" th:method="delete" th:action="@{/category/{id}(id=${categoryDto.id})}">
                             <button type="submit" class="btn btn-danger">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -54,32 +56,32 @@
                     </td>
                 </tr>
 
-                <tr th:unless="${categories.hasContent()}">
+                <tr th:unless="${categoryDtos.hasContent()}">
                     <td colspan="4">No data</td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <nav aria-label="..." th:if="${categories.hasContent()}">
+        <nav aria-label="..." th:if="${categoryDtos.hasContent()}">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!categories.hasPrevious()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/category(page=${categories.number}, size=${categories.size},
+                <li class="page-item" th:classappend="${!categoryDtos.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/category(page=${categoryDtos.number}, size=${categoryDtos.size},
                     titleFilter=${param.titleFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
                 </li>
 
                 <li class="page-item"
-                    th:each="num : ${#numbers.sequence(1, (categories.totalPages == 0 ? 1 : categories.totalPages))}"
-                    th:classappend="${num == categories.number + 1} ? 'active'">
+                    th:each="num : ${#numbers.sequence(1, (categoryDtos.totalPages == 0 ? 1 : categoryDtos.totalPages))}"
+                    th:classappend="${num == categoryDtos.number + 1} ? 'active'">
                     <a class="page-link" th:text="${num}"
-                       th:href="@{/category(page=${categories.totalPages == 0 ? 1 : num},
-                       size=${categories.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                       th:href="@{/category(page=${categoryDtos.totalPages == 0 ? 1 : num},
+                       size=${categoryDtos.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
                        sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
                 </li>
 
-                <li id="btn-next-page" class="page-item" th:classappend="${!categories.hasNext()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/category(page=${categories.number} + 2, size=${categories.size},
+                <li id="btn-next-page" class="page-item" th:classappend="${!categoryDtos.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/category(page=${categoryDtos.number} + 2, size=${categoryDtos.size},
                     titleFilter=${param.titleFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}">Next</a>
                 </li>

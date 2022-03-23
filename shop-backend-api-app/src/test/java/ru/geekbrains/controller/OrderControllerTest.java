@@ -14,8 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.geekbrains.persist.model.*;
+import ru.geekbrains.persist.*;
 import ru.geekbrains.persist.repository.*;
+import ru.geekbrains.repository.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -12,12 +12,11 @@ import ru.geekbrains.dto.ProductDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.exception.BadRequestException;
 import ru.geekbrains.controller.param.ProductListParam;
-import ru.geekbrains.persist.model.Picture;
-import ru.geekbrains.persist.model.Product;
-import ru.geekbrains.persist.repository.BrandRepository;
-import ru.geekbrains.persist.repository.CategoryRepository;
-import ru.geekbrains.persist.repository.ProductRepository;
-import ru.geekbrains.persist.specification.ProductSpecification;
+import ru.geekbrains.mapper.Mapper;
+import ru.geekbrains.persist.Picture;
+import ru.geekbrains.persist.Product;
+import ru.geekbrains.repository.ProductRepository;
+import ru.geekbrains.specification.ProductSpecification;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -33,13 +32,15 @@ public class ProductServiceImpl implements ProductService {
 
     private PictureService pictureService;
 
+    private Mapper<Product, ProductDto> productMapper;
+
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
-                              CategoryRepository categoryRepository,
-                              BrandRepository brandRepository,
-                              PictureService pictureService) {
+                              PictureService pictureService,
+                              Mapper<Product, ProductDto> productMapper) {
         this.productRepository = productRepository;
         this.pictureService = pictureService;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -47,11 +48,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException(id.toString(), "Product not found"));
 
-        return ProductDto.fromProduct(product);
+        return productMapper.toDto(product);
     }
 
     @Override
-    public Page<Product> findProductsWithFilter(ProductListParam listParam) {
+    public Page<ProductDto> findProductsWithFilter(ProductListParam listParam) {
         Specification<Product> specification = Specification.where(null);
 
         if (listParam.getTitleFilter() != null && !listParam.getTitleFilter().isBlank()) {
@@ -76,16 +77,17 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = ("desc".equals(listParam.getSortDirection())) ?
                 Sort.by(sortField).descending() : Sort.by(sortField).ascending();
 
-        return productRepository.findAll(specification, PageRequest.of(
+        Page<Product> page = productRepository.findAll(specification, PageRequest.of(
                 Optional.ofNullable(listParam.getPage()).orElse(DEFAULT_PAGE_NUMBER) - 1,
-                Optional.ofNullable(listParam.getSize()).orElse(DEFAULT_PAGE_COUNT),
-                sort));
+                Optional.ofNullable(listParam.getSize()).orElse(DEFAULT_PAGE_COUNT), sort));
+        return page
+                .map(productMapper::toDto);
     }
 
     @Override
     @Transactional
     public void saveProduct(ProductDto productDto) {
-    	Product product = productDto.toProduct();
+    	Product product = productMapper.toEntity(productDto);
     	productRepository.findProductById(product.getId()).ifPresent(p -> product.setPictures(p.getPictures()));
     	
         if (productDto.getNewPictures() != null) {

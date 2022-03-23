@@ -3,8 +3,8 @@ package ru.geekbrains.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.geekbrains.controller.dto.CategoryDto;
-import ru.geekbrains.persist.model.Category;
-import ru.geekbrains.persist.repository.CategoryRepository;
+import ru.geekbrains.persist.Category;
+import ru.geekbrains.repository.CategoryRepository;
 
 import java.util.List;
 

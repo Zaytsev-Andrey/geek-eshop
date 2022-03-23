@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import ru.geekbrains.dto.ProductDto;
-import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.Product;
 import ru.geekbrains.controller.param.ProductListParam;
 
 

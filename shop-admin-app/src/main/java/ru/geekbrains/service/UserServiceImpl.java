@@ -5,33 +5,46 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.geekbrains.dto.UserDto;
 import ru.geekbrains.controller.exception.EntityNotFoundException;
 import ru.geekbrains.controller.param.UserListParam;
-import ru.geekbrains.persist.model.User;
-import ru.geekbrains.persist.repository.UserRepository;
-import ru.geekbrains.persist.specification.UserSpecification;
+import ru.geekbrains.mapper.Mapper;
+import ru.geekbrains.persist.User;
+import ru.geekbrains.repository.UserRepository;
+import ru.geekbrains.specification.UserSpecification;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
+    private RoleService roleService;
+
+    private Mapper<User, UserDto> userMapper;
+
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleService roleService,
+                           Mapper<User, UserDto> userMapper,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleService = roleService;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDto findUserById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id.toString(), "User not found"));
-        return UserDto.fromUser(user);
+        return userMapper.toDto(user);
     }
 
     @Override
@@ -40,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> findUsersWithFilter(UserListParam listParam) {
+    public Page<UserDto> findUsersWithFilter(UserListParam listParam) {
         Specification<User> specification = Specification.where(null);
 
         if (listParam.getFirstnameFilter() != null && !listParam.getFirstnameFilter().isBlank()) {
@@ -65,12 +78,15 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findAll(specification,
                 PageRequest.of(Optional.ofNullable(listParam.getPage()).orElse(1) - 1,
-                        Optional.ofNullable(listParam.getSize()).orElse(5), sort));
+                        Optional.ofNullable(listParam.getSize()).orElse(5), sort))
+                .map(userMapper::toDto);
     }
 
     @Override
     public void saveUser(UserDto userDto) {
-        userRepository.save(userDto.toUser());
+        User user = userMapper.toEntity(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userRepository.save(user);
     }
 
     @Override

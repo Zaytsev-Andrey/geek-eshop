@@ -1,25 +1,17 @@
 package ru.geekbrains.service;
 
-import com.fasterxml.jackson.annotation.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import ru.geekbrains.dto.AllCartDto;
 import ru.geekbrains.dto.CartItemDto;
-import ru.geekbrains.dto.ProductDto;
 import ru.geekbrains.persist.CartItem;
-import ru.geekbrains.persist.model.Product;
+import ru.geekbrains.persist.Product;
 import ru.geekbrains.repository.CartRepository;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;

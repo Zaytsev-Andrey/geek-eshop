@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ru.geekbrains.dto.CategoryDto;
-import ru.geekbrains.persist.repository.CategoryRepository;
+import ru.geekbrains.repository.CategoryRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

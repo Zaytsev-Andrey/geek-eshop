@@ -17,8 +17,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.geekbrains.controller.dto.AddLineItemDto;
-import ru.geekbrains.persist.model.*;
+import ru.geekbrains.persist.*;
 import ru.geekbrains.persist.repository.*;
+import ru.geekbrains.repository.*;
 
 import java.math.BigDecimal;
 import java.util.List;

@@ -10,16 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.geekbrains.dto.AllCartDto;
-import ru.geekbrains.dto.CartItemDto;
 import ru.geekbrains.dto.OrderDetailDto;
 import ru.geekbrains.exception.OrderDetailNotFoundException;
 import ru.geekbrains.exception.OrderNotFoundException;
 import ru.geekbrains.exception.UserNotFoundException;
-import ru.geekbrains.persist.CartItem;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.repository.OrderDetailRepository;
-import ru.geekbrains.persist.repository.OrderRepository;
-import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.*;
+import ru.geekbrains.repository.OrderDetailRepository;
+import ru.geekbrains.repository.OrderRepository;
+import ru.geekbrains.repository.UserRepository;
 import ru.geekbrains.service.dto.OrderMessage;
 
 import java.math.BigDecimal;

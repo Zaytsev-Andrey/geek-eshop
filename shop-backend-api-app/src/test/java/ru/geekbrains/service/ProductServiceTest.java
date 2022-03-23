@@ -8,11 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.geekbrains.controller.dto.ProductDto;
 import ru.geekbrains.controller.param.ProductListParam;
-import ru.geekbrains.persist.model.Brand;
-import ru.geekbrains.persist.model.Category;
-import ru.geekbrains.persist.model.Picture;
-import ru.geekbrains.persist.model.Product;
-import ru.geekbrains.persist.repository.ProductRepository;
+import ru.geekbrains.dto.ProductDto;
+import ru.geekbrains.mapper.ProductMapper;
+import ru.geekbrains.persist.Brand;
+import ru.geekbrains.persist.Category;
+import ru.geekbrains.persist.Picture;
+import ru.geekbrains.persist.Product;
+import ru.geekbrains.repository.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,10 +35,12 @@ public class ProductServiceTest {
 
     private ProductRepository productRepository;
 
+    private ProductMapper<Product, ProductDto> productMapper;
+
     @BeforeEach
     public void init() {
         productRepository = mock(ProductRepository.class);
-        productService = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository, productMapper);
     }
 
     @Test

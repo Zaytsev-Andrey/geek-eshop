@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.geekbrains.persist.repository.PictureRepository;
-import ru.geekbrains.persist.model.Picture;
+import ru.geekbrains.repository.PictureRepository;
+import ru.geekbrains.persist.Picture;
 
 import java.io.IOException;
 import java.io.OutputStream;

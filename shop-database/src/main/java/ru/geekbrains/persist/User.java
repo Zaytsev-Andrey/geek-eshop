@@ -1,6 +1,9 @@
-package ru.geekbrains.persist.model;
+package ru.geekbrains.persist;
 
 import lombok.*;
+import ru.geekbrains.persist.AbstractPersistentObject;
+import ru.geekbrains.persist.Order;
+import ru.geekbrains.persist.Role;
 
 import javax.persistence.*;
 import java.util.Set;

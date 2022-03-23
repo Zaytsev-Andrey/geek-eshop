@@ -3,9 +3,12 @@ package ru.geekbrains.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.dto.RoleDto;
-import ru.geekbrains.persist.repository.RoleRepository;
+import ru.geekbrains.persist.Role;
+import ru.geekbrains.repository.RoleRepository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,4 +27,11 @@ public class RoleServiceImpl implements RoleService {
                 .map(RoleDto::fromRole)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Set<Role> findRoleByIds(Set<UUID> ids) {
+        return roleRepository.findRoleByIdIn(ids);
+    }
+
+
 }

@@ -1,7 +1,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <th scope="col" th:fragment="sort_header(header, column)">[[${header}]]
-    <a th:href="@{/product(page=${products.number} + 1,
-                    size=${products.size},
+    <a th:href="@{/product(page=${productDtos.number} + 1,
+                    size=${productDtos.size},
                     titleFilter=${param.titleFilter},
                     categoryFilter=${param.categoryFilter},
                     brandFilter=${param.brandFilter},
