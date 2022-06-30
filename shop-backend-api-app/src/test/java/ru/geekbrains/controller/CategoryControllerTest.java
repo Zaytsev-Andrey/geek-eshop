@@ -17,6 +17,8 @@ import ru.geekbrains.persist.Category;
 import ru.geekbrains.repository.CategoryRepository;
 
 
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,21 +39,21 @@ public class CategoryControllerTest {
     @MockBean
     private SimpMessagingTemplate webSocketTemplate;
 
-//    @Test
-//    @org.junit.jupiter.api.Order(1)
-//    public void testFindAllEmpty() throws Exception {
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .get("/category/all")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").isEmpty());
-//    }
+    @Test
+    @org.junit.jupiter.api.Order(1)
+    public void testFindAllEmpty() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/category/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
     @Test
     @org.junit.jupiter.api.Order(2)
     public void testFindAll() throws Exception {
-        Category categoryMonitor = categoryRepository.save(new Category(1L, "Monitor"));
-        Category categoryLaptop = categoryRepository.save(new Category(2L, "Laptop"));
+        Category categoryMonitor = categoryRepository.save(new Category(UUID.randomUUID(), "Monitor"));
+        Category categoryLaptop = categoryRepository.save(new Category(UUID.randomUUID(), "Laptop"));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/category/all")

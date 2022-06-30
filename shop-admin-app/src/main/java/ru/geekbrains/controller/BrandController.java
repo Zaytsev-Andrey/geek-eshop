@@ -22,7 +22,7 @@ public class BrandController {
 
     private final Logger logger = LoggerFactory.getLogger(BrandController.class);
 
-    private BrandService brandService;
+    private final BrandService brandService;
 
     @Autowired
     public BrandController(BrandService brandService) {

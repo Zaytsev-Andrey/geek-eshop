@@ -1,13 +1,10 @@
 package ru.geekbrains.dto;
 
 import lombok.*;
-import ru.geekbrains.persist.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Simple object for transfer business object User to UI
@@ -34,35 +31,4 @@ public class UserDto extends AbstractPersistentDto{
 
     private Set<RoleDto> rolesDto;
 
-    public UserDto(String id, String firstname, String lastname, String email, Set<RoleDto> rolesDto) {
-        this.setId(id);
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.rolesDto = rolesDto;
-    }
-    
-    public User toUser() {
-    	User user = new User();
-    	if (this.getId() != null && !this.getId().isBlank()) {
-			user.setId(UUID.fromString(this.getId()));
-		}
-    	user.setFirstname(firstname);
-    	user.setLastname(lastname);
-    	user.setEmail(email);
-    	user.setPassword(password);
-    	user.setRoles(rolesDto.stream().map(RoleDto::toRole).collect(Collectors.toSet()));
-    	return user;
-    }
-    
-    public static UserDto fromUser(User user) {
-    	UserDto userDto = new UserDto();
-    	userDto.setId(user.getId().toString());
-    	userDto.setFirstname(user.getFirstname());
-    	userDto.setLastname(user.getLastname());
-    	userDto.setEmail(user.getEmail());
-    	userDto.setPassword(user.getPassword());
-    	userDto.setRolesDto(user.getRoles().stream().map(RoleDto::fromRole).collect(Collectors.toSet()));
-    	return userDto;
-    }
 }

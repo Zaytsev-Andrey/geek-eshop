@@ -20,8 +20,8 @@ export class OrderService {
     return this.http.get<OrderDetail[]>(`/api/v1/order/${id}`).toPromise();
   }
 
-  public createOrder(): Observable<AllCartDto> {
-    return this.http.post<AllCartDto>(`/api/v1/order`, {});
+  public createOrder() {
+    return this.http.post(`/api/v1/order`, {});
   }
 
   public editOrderDetail(orderDetail: OrderDetail) {

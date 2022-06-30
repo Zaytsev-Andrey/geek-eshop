@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Brand extends AbstractPersistentObject {
+public class Brand extends AbstractPersistentEntity {
 
     @Column(name = "title", nullable = false)
     private String title;

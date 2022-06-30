@@ -1,9 +1,6 @@
 package ru.geekbrains.persist;
 
 import lombok.*;
-import ru.geekbrains.persist.AbstractPersistentObject;
-import ru.geekbrains.persist.Order;
-import ru.geekbrains.persist.Role;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -36,7 +33,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends AbstractPersistentObject {
+public class User extends AbstractPersistentEntity {
 
     @Column(name = "firstname",
             nullable = false)

@@ -1,107 +1,162 @@
 package ru.geekbrains.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.service.dto.LineItem;
+import org.junit.jupiter.api.*;
+import org.modelmapper.ModelMapper;
+import ru.geekbrains.dto.*;
+import ru.geekbrains.mapper.SessionEntityMapper;
+import ru.geekbrains.persist.CartItem;
+import ru.geekbrains.persist.Product;
+import ru.geekbrains.repository.CartRepository;
+import ru.geekbrains.repository.CartRepositoryImpl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CartServiceTest {
 
-    private CartService cartService;
+    private static CartService cartService;
 
-    @BeforeEach
-    public void init() {
-        this.cartService = new CartServiceImpl();
+    private static final UUID productId = UUID.randomUUID();
+
+    @BeforeAll
+    public static void init() {
+        SessionEntityMapper<CartItem, CartItemDto> cartItemMapper =
+                new SessionEntityMapper<>(new ModelMapper(), CartItem.class, CartItemDto.class);
+        cartItemMapper.initMapper();
+
+        CartRepository cartRepository = new CartRepositoryImpl(new ArrayList<>());
+
+        ProductService productService = mock(ProductServiceImpl.class);
+        when(productService.findProductByIdIn(Set.of(productId)))
+                .thenReturn(List.of(new Product(
+                        productId,
+                        "LG 27UP850",
+                        new BigDecimal(500),
+                        "",
+                        null,
+                        null
+                )));
+
+        cartService = new CartServiceImpl(cartRepository, productService, cartItemMapper);
     }
 
     @Test
-    public void testIfNewCartIsEmpty() {
-        assertNotNull(cartService.getLineItems());
-        assertEquals(0, cartService.getLineItems().size());
-        assertEquals(BigDecimal.ZERO, cartService.getSubTotal());
+    @org.junit.jupiter.api.Order(1)
+    public void ifNewCartIsEmptyTest() {
+        assertNotNull(cartService.getCartItems());
+        assertEquals(0, cartService.getCartItems().size());
+        assertEquals("0", cartService.getCartDto().getSubtotal());
     }
 
     @Test
-    public void testAddProduct() {
-        ProductDto expectedProduct = new ProductDto();
-        expectedProduct.setId(1L);
-        expectedProduct.setCost(new BigDecimal(500));
-        expectedProduct.setTitle("LG 27UP850");
+    @org.junit.jupiter.api.Order(2)
+    public void addProductTest() {
+        CartItemDto expectedCartItemDto = new CartItemDto(
+                productId.toString(),
+                "LG 27UP850",
+                true,
+                true,
+                "500.00",
+                "1000.00",
+                2
+        );
 
-        cartService.addProductQty(expectedProduct, "", "", true, true, 1);
-        cartService.addProductQty(expectedProduct, "", "", true, true, 1);
+        cartService.addToCart(expectedCartItemDto);
+        cartService.addToCart(expectedCartItemDto);
 
-        List<LineItem> lineItems = cartService.getLineItems();
-        assertNotNull(lineItems);
-        assertEquals(1, lineItems.size());
+        AllCartDto allCartDto = cartService.getCartDto();
+        assertNotNull(allCartDto.getLineItems());
+        assertEquals(1, allCartDto.getLineItems().size());
+        assertEquals("2000", allCartDto.getSubtotal());
 
-        LineItem lineItem = lineItems.get(0);
-        assertEquals("LG 27UP850", lineItem.getProductDto().getTitle());
-        assertEquals(new BigDecimal(500), lineItem.getProductDto().getCost());
-        assertTrue(lineItem.getGiftWrap());
-        assertEquals(2, lineItem.getQty());
-        assertEquals(new BigDecimal(1000), lineItem.getItemTotal());
+        CartItemDto cartItemDto = allCartDto.getLineItems().get(0);
+        assertEquals("LG 27UP850", cartItemDto.getProductTitle());
+        assertEquals("500", cartItemDto.getCost());
+        assertTrue(cartItemDto.getGiftWrap());
+        assertEquals(4, cartItemDto.getQty());
     }
 
     @Test
-    public void testUpdateProductQty() {
-        ProductDto expectedProduct = new ProductDto();
-        expectedProduct.setId(1L);
-        expectedProduct.setCost(new BigDecimal(500));
-        expectedProduct.setTitle("LG 27UP850");
+    @org.junit.jupiter.api.Order(3)
+    public void updateCartTest() {
+        CartItemDto expectedCartItemDto = new CartItemDto(
+                productId.toString(),
+                "LG 27UP850",
+                true,
+                true,
+                "500.00",
+                "1000.00",
+                2
+        );
 
-        cartService.addProductQty(expectedProduct, "", "", true, true, 1);
+        cartService.updateCart(expectedCartItemDto);
 
-        expectedProduct.setCost(new BigDecimal(520));
-        cartService.updateProductQty(expectedProduct, "", "", true, false, 1);
+        AllCartDto allCartDto = cartService.getCartDto();
+        assertNotNull(allCartDto.getLineItems());
+        assertEquals(1, allCartDto.getLineItems().size());
+        assertEquals("1000", allCartDto.getSubtotal());
 
-        List<LineItem> lineItems = cartService.getLineItems();
-        assertNotNull(lineItems);
-        assertEquals(1, lineItems.size());
-
-        LineItem lineItem = lineItems.get(0);
-        assertEquals("LG 27UP850", lineItem.getProductDto().getTitle());
-        assertEquals(new BigDecimal(520), lineItem.getProductDto().getCost());
-        assertFalse(lineItem.getGiftWrap());
-        assertEquals(1, lineItem.getQty());
-        assertEquals(new BigDecimal(520), lineItem.getItemTotal());
+        CartItemDto cartItemDto = allCartDto.getLineItems().get(0);
+        assertEquals("LG 27UP850", cartItemDto.getProductTitle());
+        assertEquals("500", cartItemDto.getCost());
+        assertTrue(cartItemDto.getGiftWrap());
+        assertEquals(2, cartItemDto.getQty());
     }
 
     @Test
-    public void testRemoveProduct() {
-        ProductDto expectedProduct = new ProductDto();
-        expectedProduct.setId(1L);
-        expectedProduct.setCost(new BigDecimal(500));
-        expectedProduct.setTitle("LG 27UP850");
+    @org.junit.jupiter.api.Order(4)
+    public void deleteItemTest() {
+        CartItemDto expectedCartItemDto = new CartItemDto(
+                productId.toString(),
+                "LG 27UP850",
+                true,
+                true,
+                "500.00",
+                "1000.00",
+                2
+        );
 
-        cartService.addProductQty(expectedProduct, "", "", true, true, 4);
+        cartService.deleteItem(expectedCartItemDto);
 
-        cartService.removeProduct(expectedProduct, "", "", true, true);
-
-        List<LineItem> lineItems = cartService.getLineItems();
-        assertNotNull(lineItems);
-        assertEquals(0, lineItems.size());
+        AllCartDto allCartDto = cartService.getCartDto();
+        assertNotNull(allCartDto.getLineItems());
+        assertEquals(0, allCartDto.getLineItems().size());
+        assertEquals("0", allCartDto.getSubtotal());
     }
 
     @Test
-    public void testClear() {
-        ProductDto expectedProduct = new ProductDto();
-        expectedProduct.setId(1L);
-        expectedProduct.setCost(new BigDecimal(500));
-        expectedProduct.setTitle("LG 27UP850");
+    @org.junit.jupiter.api.Order(5)
+    public void clearTest() {
+        CartItemDto expectedCartItemDto = new CartItemDto(
+                productId.toString(),
+                "LG 27UP850",
+                true,
+                true,
+                "500.00",
+                "1000.00",
+                2
+        );
 
-        cartService.addProductQty(expectedProduct, "", "", true, true, 4);
-        cartService.addProductQty(expectedProduct, "", "", false, false, 1);
+        cartService.addToCart(expectedCartItemDto);
+
+        AllCartDto allCartDto = cartService.getCartDto();
+        assertNotNull(allCartDto.getLineItems());
+        assertEquals(1, allCartDto.getLineItems().size());
+        assertEquals("1000", allCartDto.getSubtotal());
 
         cartService.clear();
 
-        List<LineItem> lineItems = cartService.getLineItems();
-        assertNotNull(lineItems);
-        assertEquals(0, lineItems.size());
+        allCartDto = cartService.getCartDto();
+        assertNotNull(allCartDto.getLineItems());
+        assertEquals(0, allCartDto.getLineItems().size());
+        assertEquals("0", allCartDto.getSubtotal());
     }
 }

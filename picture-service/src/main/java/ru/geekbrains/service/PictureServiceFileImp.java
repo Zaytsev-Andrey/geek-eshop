@@ -21,9 +21,9 @@ public class PictureServiceFileImp implements PictureService {
 
     private final Logger logger = LoggerFactory.getLogger(PictureServiceFileImp.class);
 
-    private String storagePath;
+    private final String storagePath;
 
-    private PictureRepository pictureRepository;
+    private final PictureRepository pictureRepository;
 
     @Autowired
     public PictureServiceFileImp(PictureRepository pictureRepository,

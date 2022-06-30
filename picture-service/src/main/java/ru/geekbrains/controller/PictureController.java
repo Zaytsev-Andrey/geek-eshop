@@ -21,7 +21,7 @@ public class PictureController {
 
     private final Logger logger = LoggerFactory.getLogger(PictureController.class);
 
-    private PictureService pictureService;
+    private final PictureService pictureService;
 
     @Autowired
     public PictureController(PictureService pictureService) {
@@ -48,6 +48,6 @@ public class PictureController {
                                 @PathVariable("pictureId") UUID pictureId) {
         logger.info("Deleting picture with id='{}'", pictureId);
         pictureService.deletePictureById(pictureId);
-        return "redirect:/product/" + productID;
+        return "redirect:/product" + productID;
     }
 }

@@ -27,9 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_COUNT = 5;
 
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    private Mapper<Category, CategoryDto> categoryMapper;
+    private final Mapper<Category, CategoryDto> categoryMapper;
 
     @Autowired
     public CategoryServiceImpl(CategoryRepository categoryRepository, Mapper<Category, CategoryDto> categoryMapper) {
@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> findAllCategories() {
         return categoryRepository.findAll().stream()
-                .map(category -> categoryMapper.toDto(category))
+                .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 

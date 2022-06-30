@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role extends AbstractPersistentObject {
+public class Role extends AbstractPersistentEntity {
 
     @Column(name = "role",
             nullable = false)

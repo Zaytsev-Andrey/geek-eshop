@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Category extends AbstractPersistentObject {
+public class Category extends AbstractPersistentEntity {
 
     @Column(name = "title",
             nullable = false)

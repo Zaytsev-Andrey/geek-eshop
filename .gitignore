@@ -42,3 +42,6 @@ geek-jewellery-shop/
 ### MongoDB ###
 mongodb/
 
+### Angular ###
+shop-frontend-app/node_modules/
+

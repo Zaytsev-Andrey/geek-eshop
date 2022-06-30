@@ -23,8 +23,10 @@ export class CartService {
     return this.http.put<AllCartDto>(`/api/v1/cart/`, addLineItemDto);
   }
 
-  public removeLineItem(addLineItemDto: LineItemDto): Observable<AllCartDto> {
-    return this.http.post<AllCartDto>(`/api/v1/cart/remove`, addLineItemDto);
+  public removeLineItem(addLineItemDto: LineItemDto) {
+    return this.http.delete<AllCartDto>(`/api/v1/cart`, ({
+      body: addLineItemDto
+    }));
   }
 
   public clearCart(): Observable<AllCartDto> {

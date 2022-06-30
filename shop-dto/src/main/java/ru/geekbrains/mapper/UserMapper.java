@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class UserMapper<E extends User, D extends UserDto> extends AbstractMapper<E, D> {
 
-    private Mapper<Role, RoleDto> roleMapper;
+    private final Mapper<Role, RoleDto> roleMapper;
 
     public UserMapper(ModelMapper modelMapper,
                       Class<E> entityClass,
@@ -25,7 +25,7 @@ public class UserMapper<E extends User, D extends UserDto> extends AbstractMappe
     }
 
     @Override
-    public void mapSpecificFields(User source, UserDto destination) {
+    public void mapEntitySpecificFields(User source, UserDto destination) {
         destination.setId(source.getId().toString());
         destination.setRolesDto(source.getRoles().stream()
                 .map(roleMapper::toDto)
@@ -33,17 +33,14 @@ public class UserMapper<E extends User, D extends UserDto> extends AbstractMappe
     }
 
     @Override
-    public void mapSpecificFields(UserDto source, User destination) {
+    public void mapDtoSpecificFields(UserDto source, User destination) {
         String id = source.getId();
         if (!Objects.isNull(id) && !id.isBlank()) {
             destination.setId(UUID.fromString(id));
         }
         destination.setRoles(source.getRolesDto().stream()
                 .map(roleMapper::toEntity)
-                .map(role -> {
-                    role.setUsers(Set.of(destination));
-                    return role;
-                })
+                .peek(role -> role.setUsers(Set.of(destination)))
                 .collect(Collectors.toSet()));
     }
 

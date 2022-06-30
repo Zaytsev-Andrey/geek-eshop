@@ -9,11 +9,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.geekbrains.dto.AllCartDto;
 import ru.geekbrains.dto.OrderDetailDto;
+import ru.geekbrains.dto.OrderDto;
 import ru.geekbrains.exception.OrderDetailNotFoundException;
 import ru.geekbrains.exception.OrderNotFoundException;
 import ru.geekbrains.exception.UserNotFoundException;
+import ru.geekbrains.mapper.Mapper;
 import ru.geekbrains.persist.*;
 import ru.geekbrains.repository.OrderDetailRepository;
 import ru.geekbrains.repository.OrderRepository;
@@ -21,10 +22,7 @@ import ru.geekbrains.repository.UserRepository;
 import ru.geekbrains.service.dto.OrderMessage;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,87 +30,102 @@ public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private OrderDetailRepository orderDetailRepository;
+    private final OrderDetailRepository orderDetailRepository;
     
-    private ProductService productService;
+    private final UserService userService;
     
-    private CartService cartService;
+    private final CartService cartService;
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    private SimpMessagingTemplate webSocketTemplate;
+    private final SimpMessagingTemplate webSocketTemplate;
+
+    private final Mapper<Order, OrderDto> orderMapper;
+
+    private final Mapper<OrderDetail, OrderDetailDto> orderDetailMapper;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
-                            ProductService productService,
+                            UserService userService,
                             CartService cartService,
                             RabbitTemplate rabbitTemplate,
-                            SimpMessagingTemplate webSocketTemplate) {
+                            SimpMessagingTemplate webSocketTemplate,
+                            Mapper<Order, OrderDto> orderMapper,
+                            Mapper<OrderDetail, OrderDetailDto> orderDetailMapper) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDetailRepository = orderDetailRepository;
-        this.productService = productService;
+        this.userService = userService;
         this.cartService = cartService;
         this.rabbitTemplate = rabbitTemplate;
         this.webSocketTemplate = webSocketTemplate;
+        this.orderMapper = orderMapper;
+        this.orderDetailMapper = orderDetailMapper;
+    }
+
+    @Override
+    public List<OrderDto> getOrders(String username) {
+        return userService.getUserOrders(username).stream()
+                .map(orderMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<OrderDetailDto> getOrderDetails(UUID id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException(id));
-        
-        List<OrderDetailDto> result =  order.getOrderDetails().stream()
-                .map(detail -> OrderDetailDto.fromOrderDetail(detail))
+        Optional<Order> order = orderRepository.findById(id);
+        return order
+                .orElseThrow(() -> new OrderNotFoundException(id))
+                .getOrderDetails().stream()
+                .map(orderDetailMapper::toDto)
                 .collect(Collectors.toList());
-
-        return result;
     }
 
     @Transactional
     @Override
-    public AllCartDto save(String email) {
-    	if (!cartService.isEmpti()) {
-    		List<CartItem> cartItems = cartService.getCartItems();
-    		Map<UUID, Product> products = cartService.getCartProducts(cartItems);
-    		
-    		Set<OrderDetail> orderDetails = cartItems.stream()
-    				.map(cartItem -> new OrderDetail(
-    							products.get(cartItem.getId()),
-    							cartItem.getQty(),
-    							products.get(cartItem.getId()).getCost(),
-    							cartItem.getGiftWrap()
-					))
-    				.collect(Collectors.toSet());
-    		
-    		
-    		Order order = new Order(
-	    					orderDetails.stream()
-	    							.map(detail -> detail.getCost().multiply(new BigDecimal(detail.getQty())))
-	    							.reduce(BigDecimal.ZERO, BigDecimal::add),
-		                    OrderStatus.CREATED,
-		                    userRepository.findByEmail(email)
-		                            .orElseThrow(() -> new UserNotFoundException(email))
-                    );
-    		
-    		orderDetails.forEach(detail -> order.addDetail(detail));
-    		
-    		orderRepository.save(order);
-    		
-    		cartService.clear();
-    		
-    		rabbitTemplate.convertAndSend("order.exchange", "new_order",
-                    new OrderMessage(order.getId().toString(), order.getStatus().getName()));
-    		
+    public void save(String email) {
+    	if (cartService.isEmpty()) {
+            return;
     	}
-    	
-        return cartService.getCartDto();
+
+        List<CartItem> cartItems = cartService.getCartItems();
+        Map<UUID, Product> products = cartService.getCartProducts(cartItems);
+        Set<OrderDetail> orderDetails = createOrderDetails(cartItems, products);
+        Order order = createOrderFromOrderDetails(orderDetails, email);
+
+        orderDetails.forEach(order::addDetail);
+        orderRepository.save(order);
+        cartService.clear();
+
+        rabbitTemplate.convertAndSend("order.exchange", "new_order",
+                new OrderMessage(order.getId().toString(), order.getStatus().getName()));
+    }
+
+    private Order createOrderFromOrderDetails(Set<OrderDetail> orderDetails, String email) {
+        return new Order(
+                orderDetails.stream()
+                        .map(detail -> detail.getCost().multiply(new BigDecimal(detail.getQty())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add),
+                OrderStatus.CREATED,
+                userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UserNotFoundException(email))
+        );
+    }
+
+    private Set<OrderDetail> createOrderDetails(List<CartItem> cartItems, Map<UUID, Product> products) {
+        return cartItems.stream()
+                .map(cartItem -> new OrderDetail(
+                        products.get(cartItem.getId()),
+                        cartItem.getQty(),
+                        products.get(cartItem.getId()).getCost(),
+                        cartItem.getGiftWrap()
+                ))
+                .collect(Collectors.toSet());
     }
 
     private Order changeOrderStatus(UUID orderId, String newStatus) {
@@ -131,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public Order editOrderDetail(OrderDetailDto orderDetailDto) {
+    public List<OrderDetailDto> editOrderDetail(OrderDetailDto orderDetailDto) {
     	OrderDetail orderDetail = orderDetailRepository.findById(UUID.fromString(orderDetailDto.getId()))
                 .orElseThrow(() -> new OrderDetailNotFoundException(UUID.fromString(orderDetailDto.getId())));
 
@@ -143,7 +156,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderDetail.getOrder();
         updateOrderTotal(order);
 
-        return order;
+        return getOrderDetails(order.getId());
     }
 
     private void updateOrderTotal(Order order) {
@@ -153,8 +166,6 @@ public class OrderServiceImpl implements OrderService {
 
         order.setPrice(total);
         order.setStatus(OrderStatus.MODIFIED);
-
-//        orderRepository.save(order);
     }
 
     @Transactional

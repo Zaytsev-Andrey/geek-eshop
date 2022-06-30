@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @NamedEntityGraph(
         name = "orderWithDetailsEntityGraph",
@@ -34,7 +35,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order extends AbstractPersistentObject {
+public class Order extends AbstractPersistentEntity {
 
     @Column(name = "creation_date", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -59,6 +60,15 @@ public class Order extends AbstractPersistentObject {
         this.price = price;
         this.status = status;
         this.user = user;
+    }
+
+    public Order(UUID id, Date creationDate, BigDecimal price, OrderStatus status, User user, Set<OrderDetail> orderDetails) {
+        super(id);
+        this.creationDate = creationDate;
+        this.price = price;
+        this.status = status;
+        this.user = user;
+        this.orderDetails = orderDetails;
     }
 
     public void addDetail(OrderDetail detail) {

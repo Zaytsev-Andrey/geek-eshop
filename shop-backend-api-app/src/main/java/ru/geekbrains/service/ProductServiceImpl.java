@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    private Mapper<Product, ProductDto> productMapper;
+    private final Mapper<Product, ProductDto> productMapper;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, Mapper<Product, ProductDto> productMapper) {
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
         }
         if (listParam.getCategoriesFilter() != null && listParam.getCategoriesFilter().size() > 0) {
             specification = specification.and(ProductSpecification.categoryContains(listParam.getCategoriesFilter().stream()
-            		.map(id -> UUID.fromString(id))
+            		.map(UUID::fromString)
             		.collect(Collectors.toList())));
         }
         if (listParam.getBrandFilter() != null && listParam.getBrandFilter() > 0) {

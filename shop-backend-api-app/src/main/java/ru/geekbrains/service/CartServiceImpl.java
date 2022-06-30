@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import ru.geekbrains.dto.AllCartDto;
 import ru.geekbrains.dto.CartItemDto;
+import ru.geekbrains.mapper.Mapper;
 import ru.geekbrains.persist.CartItem;
 import ru.geekbrains.persist.Product;
 import ru.geekbrains.repository.CartRepository;
@@ -17,24 +18,24 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-//@Scope(scopeName = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
-//@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartServiceImpl implements CartService {
 	
-	private CartRepository cartRepository;
+	private final CartRepository cartRepository;
 	
-	private ProductService productService;
+	private final ProductService productService;
+
+	private final Mapper<CartItem, CartItemDto> cartItemMapper;
 	
 	@Autowired
-	public CartServiceImpl(CartRepository cartRepository, ProductService productService) {
+	public CartServiceImpl(CartRepository cartRepository, ProductService productService, Mapper<CartItem, CartItemDto> cartItemMapper) {
 		this.cartRepository = cartRepository;
 		this.productService = productService;
+		this.cartItemMapper = cartItemMapper;
 	}
 
 	@Override
 	public void addToCart(CartItemDto cartItemDto) {
-		cartRepository.save(cartItemDto.toCartItem());
+		cartRepository.save(cartItemMapper.toEntity(cartItemDto));
 	}
 	
 	
@@ -42,12 +43,12 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public AllCartDto updateCart(CartItemDto cartItemDto) {
 		if (cartItemDto.getGiftWrap() != cartItemDto.getChangeGiftWrap()) {
-			CartItem cartItem = cartItemDto.toCartItem();
+			CartItem cartItem = cartItemMapper.toEntity(cartItemDto);
 			cartItem.setGiftWrap(cartItemDto.getChangeGiftWrap());
 			cartRepository.delete(cartItem);
-			cartRepository.save(cartItemDto.toCartItem());
+			cartRepository.save(cartItemMapper.toEntity(cartItemDto));
 		} else {
-			cartRepository.update(cartItemDto.toCartItem());
+			cartRepository.update(cartItemMapper.toEntity(cartItemDto));
 		}
 		
 		return this.getCartDto();
@@ -65,7 +66,7 @@ public class CartServiceImpl implements CartService {
 		List<CartItem> cartItems = cartRepository.getCartItems();
 		
 		List<CartItemDto> cartItemDtos = cartItems.stream()
-				.map(CartItemDto::fromCartItem)
+				.map(cartItemMapper::toDto)
 				.collect(Collectors.toList());
 		
 		Map<UUID, Product> products = getCartProducts(cartItems);
@@ -100,12 +101,12 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public AllCartDto deleteItem(CartItemDto cartItemDto) {
-		cartRepository.delete(cartItemDto.toCartItem());
+		cartRepository.delete(cartItemMapper.toEntity(cartItemDto));
 		return this.getCartDto();
 	}
 
 	@Override
-	public boolean isEmpti() {
+	public boolean isEmpty() {
 		return cartRepository.isEmpty();
 	}
 	

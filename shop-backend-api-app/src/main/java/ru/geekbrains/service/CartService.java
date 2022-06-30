@@ -25,21 +25,6 @@ public interface CartService {
 	
 	AllCartDto deleteItem(CartItemDto cartItemDto);
 	
-	boolean isEmpti();
+	boolean isEmpty();
 
-//    void addProductQty(ProductDto productDto, boolean saveGiftWrap, boolean giftWrap, int qty);
-//
-//    void updateProductQty(ProductDto productDto, boolean saveGiftWrap, boolean giftWrap, int qty);
-//
-//    void removeProductQty(ProductDto productDto, boolean giftWrap, int qty);
-//
-//    void removeProduct(ProductDto productDto, boolean saveGiftWrap, boolean giftWrap);
-//
-    
-//
-//    boolean isEmpty();
-//
-//    List<LineItem> getLineItems();
-//
-//    BigDecimal getSubTotal();
 }

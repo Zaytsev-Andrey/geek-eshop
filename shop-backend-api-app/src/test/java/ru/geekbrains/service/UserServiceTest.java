@@ -2,17 +2,13 @@ package ru.geekbrains.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.OrderDto;
 import ru.geekbrains.persist.Order;
 import ru.geekbrains.persist.OrderStatus;
 import ru.geekbrains.persist.User;
 import ru.geekbrains.repository.UserRepository;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,27 +30,27 @@ public class UserServiceTest {
     @Test
     public void testGetUserOrders() {
         Order expectedOrder = new Order();
-        expectedOrder.setId(1L);
+        expectedOrder.setId(UUID.randomUUID());
         expectedOrder.setCreationDate(new Date());
         expectedOrder.setPrice(new BigDecimal(500));
         expectedOrder.setStatus(OrderStatus.CREATED);
 
         User expectedUser = new User();
-        expectedUser.setId(1L);
+        expectedUser.setId(UUID.randomUUID());
         expectedUser.setEmail("user@mail.ru");
-        expectedUser.setOrders(List.of(expectedOrder));
+        expectedUser.setOrders(Set.of(expectedOrder));
 
         when(userRepository.findUserByEmail(expectedUser.getEmail()))
                 .thenReturn(Optional.of(expectedUser));
 
-        List<OrderDto> dtoOrders = userService.getUserOrders(expectedUser.getEmail());
+        Set<Order> orders = userService.getUserOrders(expectedUser.getEmail());
 
-        assertNotNull(dtoOrders);
-        assertEquals(1, dtoOrders.size());
+        assertNotNull(orders);
+        assertEquals(1, orders.size());
 
-        OrderDto orderDto = dtoOrders.get(0);
-        assertEquals(expectedOrder.getId(), orderDto.getId());
-        assertEquals(expectedOrder.getPrice(), orderDto.getPrice());
-        assertEquals(expectedOrder.getStatus().getName(), orderDto.getStatus());
+        Order order = orders.iterator().next();
+        assertEquals(expectedOrder.getId(), order.getId());
+        assertEquals(expectedOrder.getPrice(), order.getPrice());
+        assertEquals(expectedOrder.getStatus().getName(), order.getStatus().getName());
     }
 }

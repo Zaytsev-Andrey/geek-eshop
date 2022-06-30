@@ -28,11 +28,11 @@ public class ProductServiceImpl implements ProductService {
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_COUNT = 5;
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    private PictureService pictureService;
+    private final PictureService pictureService;
 
-    private Mapper<Product, ProductDto> productMapper;
+    private final Mapper<Product, ProductDto> productMapper;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,

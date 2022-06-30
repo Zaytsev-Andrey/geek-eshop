@@ -21,7 +21,7 @@ public class CategoryController {
 
     private final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Autowired
     public CategoryController(CategoryService categoryService) {

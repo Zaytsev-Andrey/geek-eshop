@@ -1,10 +1,9 @@
 package ru.geekbrains.service;
 
-import ru.geekbrains.dto.OrderDto;
-
-import java.util.List;
+import ru.geekbrains.persist.Order;
+import java.util.Set;
 
 public interface UserService {
 
-    List<OrderDto> getUserOrders(String email);
+    Set<Order> getUserOrders(String email);
 }

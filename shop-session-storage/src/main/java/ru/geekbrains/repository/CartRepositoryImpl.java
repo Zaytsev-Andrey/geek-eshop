@@ -41,7 +41,7 @@ public class CartRepositoryImpl implements CartRepository {
 	@Override
 	public List<CartItem> getCartItems() {
 		cartItems.forEach(CartItem::setQty);
-		return new ArrayList<CartItem>(cartItems.keySet());
+		return new ArrayList<>(cartItems.keySet());
 	}
 
 	@Override

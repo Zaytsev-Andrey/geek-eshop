@@ -22,21 +22,17 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private RoleService roleService;
+    private final Mapper<User, UserDto> userMapper;
 
-    private Mapper<User, UserDto> userMapper;
-
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           RoleService roleService,
                            Mapper<User, UserDto> userMapper,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleService = roleService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }

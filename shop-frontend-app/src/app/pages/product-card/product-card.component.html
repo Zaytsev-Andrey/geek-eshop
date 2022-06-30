@@ -31,14 +31,15 @@
     <p>Price: ${{product.cost}}</p>
     <p>Description</p>
     <p class="text-muted">{{product.description}}</p>
-    <form class="row">
+    <div class="row">
       <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Add to card</button>
+<!--        <button type="submit" class="btn btn-primary">Add to card</button>-->
+        <a (click)="addToCart(product.id)" id="btn-add-to-cart" class="btn btn-primary">Add to card</a>
       </div>
       <div class="col-auto">
-        <input type="number" class="form-control" value="0"/>
+        <input type="number" class="form-control" value="{{qty}}" [(ngModel)]="qty" />
       </div>
-    </form>
+    </div>
 
   </div>
 </div>

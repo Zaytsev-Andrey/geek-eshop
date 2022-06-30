@@ -45,4 +45,19 @@ public class MapperConfig {
     public Mapper<User, UserDto> userMapper() {
         return new UserMapper<>(modelMapper(), User.class, UserDto.class, roleMapper());
     }
+
+    @Bean
+    public Mapper<CartItem, CartItemDto> cartItemMapper() {
+        return new SessionEntityMapper<>(modelMapper(), CartItem.class, CartItemDto.class);
+    }
+
+    @Bean
+    public Mapper<OrderDetail, OrderDetailDto> orderDetailMapper() {
+        return new OrderDetailMapper<>(modelMapper(), OrderDetail.class, OrderDetailDto.class, productMapper());
+    }
+
+    @Bean
+    public Mapper<Order, OrderDto> orderMapper() {
+        return new IdUUIDMapper<>(modelMapper(), Order.class, OrderDto.class);
+    }
 }

@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-public abstract class AbstractPersistentObject {
+public abstract class AbstractPersistentEntity {
 	
 	@Id
 //    @GeneratedValue(generator = "UUID")
@@ -36,9 +36,9 @@ public abstract class AbstractPersistentObject {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof AbstractPersistentObject))
+		if (!(obj instanceof AbstractPersistentEntity))
 			return false;
-		AbstractPersistentObject other = (AbstractPersistentObject) obj;
+		AbstractPersistentEntity other = (AbstractPersistentEntity) obj;
 		return Objects.equals(id, other.getId());
 	}
 

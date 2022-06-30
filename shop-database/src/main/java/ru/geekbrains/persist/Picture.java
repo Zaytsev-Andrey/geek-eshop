@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "pictures")
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Picture extends AbstractPersistentObject {
+public class Picture extends AbstractPersistentEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -27,6 +28,14 @@ public class Picture extends AbstractPersistentObject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public Picture(UUID id, String name, String contentType, String storageUUID, Product product) {
+        super(id);
+        this.name = name;
+        this.contentType = contentType;
+        this.storageUUID = storageUUID;
+        this.product = product;
+    }
 
     public Picture(String name, String contentType, String storageUUID) {
         this.name = name;

@@ -1,10 +1,6 @@
 package ru.geekbrains.persist;
 
 import lombok.*;
-import ru.geekbrains.persist.AbstractPersistentObject;
-import ru.geekbrains.persist.Brand;
-import ru.geekbrains.persist.Category;
-import ru.geekbrains.persist.Picture;
 
 import javax.persistence.*;
 
@@ -41,7 +37,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Product extends AbstractPersistentObject {
+public class Product extends AbstractPersistentEntity {
 
     @Column(name = "title", nullable = false, length = 512)
     private String title;

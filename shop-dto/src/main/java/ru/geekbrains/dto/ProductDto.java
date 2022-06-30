@@ -2,16 +2,12 @@ package ru.geekbrains.dto;
 
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.geekbrains.persist.Picture;
-import ru.geekbrains.persist.Product;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Simple object for transfer business object Product to UI
@@ -50,30 +46,4 @@ public class ProductDto extends AbstractPersistentDto {
         this.pictures = pictures;
     }
     
-    public Product toProduct() {
-    	Product product = new Product();
-    	if (this.getId() != null && !this.getId().isBlank()) {
-			product.setId(UUID.fromString(this.getId()));
-		}
-    	product.setTitle(title);
-    	product.setCost(new BigDecimal(cost));
-    	product.setDescription(description);
-    	product.setCategory(categoryDto.toCategory());
-    	product.setBrand(brandDto.toBrand());
-    	return product;
-    }
-    
-    public static ProductDto fromProduct(Product product) {
-    	ProductDto productDto = new ProductDto();
-    	productDto.setId(product.getId().toString());
-    	productDto.setTitle(product.getTitle());
-    	productDto.setCost(product.getCost().toString());
-    	productDto.setDescription(product.getDescription());
-    	productDto.setCategoryDto(CategoryDto.fromCategory(product.getCategory()));
-    	productDto.setBrandDto(BrandDto.fromBrand(product.getBrand()));
-    	productDto.setPictures(product.getPictures().stream()
-    			.map(Picture::getId)
-    			.collect(Collectors.toSet()));
-    	return productDto;
-    }
 }

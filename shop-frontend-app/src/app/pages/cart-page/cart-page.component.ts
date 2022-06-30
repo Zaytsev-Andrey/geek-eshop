@@ -62,7 +62,7 @@ export class CartPageComponent implements OnInit {
   createOrder() {
     if (this.authService.isAuthenticated()) {
       this.orderService.createOrder().subscribe(res => {
-        this.content = res;
+        this.router.navigateByUrl("/order");
       }, err => {
         console.error('Creating order error', err);
       })

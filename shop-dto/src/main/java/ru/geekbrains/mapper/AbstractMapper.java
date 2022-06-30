@@ -3,20 +3,18 @@ package ru.geekbrains.mapper;
 import lombok.Getter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import ru.geekbrains.dto.AbstractPersistentDto;
-import ru.geekbrains.persist.AbstractPersistentObject;
 
 import java.util.Objects;
 
 @Getter
-public abstract class AbstractMapper<E extends AbstractPersistentObject, D extends AbstractPersistentDto>
+public abstract class AbstractMapper<E, D>
         implements Mapper<E, D> {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    private Class<E> entityClass;
+    private final Class<E> entityClass;
 
-    private Class<D> dtoClass;
+    private final Class<D> dtoClass;
 
     public AbstractMapper(ModelMapper modelMapper, Class<E> entityClass, Class<D> dtoClass) {
         this.modelMapper = modelMapper;
@@ -38,7 +36,7 @@ public abstract class AbstractMapper<E extends AbstractPersistentObject, D exten
         return context -> {
             E source = context.getSource();
             D destination = context.getDestination();
-            mapSpecificFields(source, destination);
+            mapEntitySpecificFields(source, destination);
             return context.getDestination();
         };
     }
@@ -47,13 +45,13 @@ public abstract class AbstractMapper<E extends AbstractPersistentObject, D exten
         return context -> {
             D source = context.getSource();
             E destination = context.getDestination();
-            mapSpecificFields(source, destination);
+            mapDtoSpecificFields(source, destination);
             return context.getDestination();
         };
     }
 
-    public abstract void mapSpecificFields(E source, D destination);
+    public abstract void mapEntitySpecificFields(E source, D destination);
 
-    public abstract void mapSpecificFields(D source, E destination);
+    public abstract void mapDtoSpecificFields(D source, E destination);
 
 }

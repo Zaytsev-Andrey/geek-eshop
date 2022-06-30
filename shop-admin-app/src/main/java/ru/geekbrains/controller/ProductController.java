@@ -26,11 +26,11 @@ public class ProductController {
 
     private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    private ProductService productService;
+    private final ProductService productService;
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
-    private BrandService brandService;
+    private final BrandService brandService;
 
     @Autowired
     public ProductController(ProductService productService,
