@@ -80,7 +80,6 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> findProductByIdIn(Set<UUID> ids) {
-		// TODO Auto-generated method stub
 		return productRepository.findProductByIdIn(ids);
 	}
     
