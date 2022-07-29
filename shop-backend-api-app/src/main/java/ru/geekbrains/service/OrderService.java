@@ -1,25 +1,23 @@
 package ru.geekbrains.service;
 
-import javassist.NotFoundException;
-import org.springframework.security.core.Authentication;
-import ru.geekbrains.controller.dto.AllCartDto;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.OrderDto;
-import ru.geekbrains.persist.model.Order;
-import ru.geekbrains.service.dto.LineItem;
+import ru.geekbrains.dto.OrderDetailDto;
+import ru.geekbrains.dto.OrderDto;
+import ru.geekbrains.persist.Order;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
 
-    void save(List<LineItem> lineItems, BigDecimal total, String email);
+    void save(String email);
 
-    List<OrderDetailDto> getOrderDetails(Long id);
+    List<OrderDto> getOrders(String username);
 
-    void removeOrder(Long id);
+    List<OrderDetailDto> getOrderDetails(UUID id);
 
-    Order editOrderDetail(OrderDetailDto orderDetailDto);
+    void removeOrder(UUID id);
 
-    Order removeOrderDetail(Long id);
+    List<OrderDetailDto> editOrderDetail(OrderDetailDto orderDetailDto);
+
+    Order removeOrderDetail(UUID id);
 }

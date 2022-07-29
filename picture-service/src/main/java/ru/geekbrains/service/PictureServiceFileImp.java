@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.geekbrains.persist.repository.PictureRepository;
-import ru.geekbrains.persist.model.Picture;
+import ru.geekbrains.repository.PictureRepository;
+import ru.geekbrains.persist.Picture;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,9 +21,9 @@ public class PictureServiceFileImp implements PictureService {
 
     private final Logger logger = LoggerFactory.getLogger(PictureServiceFileImp.class);
 
-    private String storagePath;
+    private final String storagePath;
 
-    private PictureRepository pictureRepository;
+    private final PictureRepository pictureRepository;
 
     @Autowired
     public PictureServiceFileImp(PictureRepository pictureRepository,
@@ -33,13 +33,13 @@ public class PictureServiceFileImp implements PictureService {
     }
 
     @Override
-    public Optional<String> getPictureContentTypeById(long id) {
+    public Optional<String> getPictureContentTypeById(UUID id) {
         return pictureRepository.findById(id)
                 .map(Picture::getContentType);
     }
 
-    @Override
-    public byte[] downloadPictureById(long id) {
+	@Override
+    public byte[] downloadPictureById(UUID id) {
         return pictureRepository.findById(id)
                 .map(picture -> Path.of(storagePath, picture.getStorageUUID()))
                 .filter(Files::exists)
@@ -55,7 +55,7 @@ public class PictureServiceFileImp implements PictureService {
     }
 
     @Override
-    public String savePicture(byte[] picture) {
+    public String uploadPicture(byte[] picture) {
         String fileName = UUID.randomUUID().toString();
         logger.info("Storage path: '{}'", storagePath);
         try (OutputStream os = Files.newOutputStream(Path.of(storagePath, fileName))) {
@@ -69,7 +69,7 @@ public class PictureServiceFileImp implements PictureService {
 
     @Override
     @Transactional
-    public void deletePictureById(long id) {
+    public void deletePictureById(UUID id) {
         Optional<Picture> pictureOpt = pictureRepository.findById(id);
         if (pictureOpt.isPresent()) {
             try {

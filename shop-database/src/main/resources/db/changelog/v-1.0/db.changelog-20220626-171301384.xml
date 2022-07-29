@@ -1,0 +1,160 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-1">
+        <createTable tableName="brands">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="brandsPK"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-2">
+        <createTable tableName="categories">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="categoriesPK"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-3">
+        <createTable tableName="order_details">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="order_detailsPK"/>
+            </column>
+            <column name="cost" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gift_wrap" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BINARY(16)"/>
+            <column name="product_id" type="BINARY(16)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-4">
+        <createTable tableName="orders">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="ordersPK"/>
+            </column>
+            <column name="creation_date" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BINARY(16)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-5">
+        <createTable tableName="pictures">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="picturesPK"/>
+            </column>
+            <column name="content_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_uuid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="BINARY(16)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-6">
+        <createTable tableName="products">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="productsPK"/>
+            </column>
+            <column name="cost" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="brand_id" type="BINARY(16)"/>
+            <column name="category_id" type="BINARY(16)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-7">
+        <createTable tableName="roles">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="rolesPK"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-8">
+        <createTable tableName="users">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="usersPK"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-9">
+        <createTable tableName="users_roles">
+            <column name="user_id" type="BINARY(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BINARY(16)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-10">
+        <addPrimaryKey columnNames="role_id, user_id" tableName="users_roles"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-11">
+        <addUniqueConstraint columnNames="email" constraintName="UC_USERSEMAIL_COL" tableName="users"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-12">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="orders" constraintName="FK32ql8ubntj5uh44ph9659tiih" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-13">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="pictures" constraintName="FK43hu51t487tsmo7tltxmdx9br" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="products" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-14">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="order_details" constraintName="FK4q98utpd73imf4yhttm3w0eax" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="products" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-15">
+        <addForeignKeyConstraint baseColumnNames="brand_id" baseTableName="products" constraintName="FKa3a4mpsfdf4d2y6r8ra3sc8mv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="brands" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-16">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_details" constraintName="FKjyu2qbqt8gnvno9oe9j2s2ldk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="orders" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-17">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="products" constraintName="FKog2rp4qthbtt2lfyhfo32lsw9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="categories" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-18">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users_roles" constraintName="fk_role_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="roles" validate="true"/>
+    </changeSet>
+    <changeSet author="andrey_zaytsev (generated)" id="1656263591469-19">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_roles" constraintName="fk_user_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

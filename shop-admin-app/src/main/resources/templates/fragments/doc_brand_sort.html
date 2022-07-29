@@ -1,6 +1,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <th scope="col" th:fragment="sort_header(header, column)">[[${header}]]
-    <a th:href="@{/brand(page=${brands.number} + 1, size=${brands.size},
+    <a th:href="@{/brand(page=${brandDtos.number} + 1, size=${brandDtos.size},
                     titleFilter=${param.titleFilter}, sortField=${column},
                     sortDirection=(${#strings.equals(param.sortField, column)} and
                             ${#strings.equals(param.sortDirection, 'asc')}) ? 'desc' : 'asc')}">

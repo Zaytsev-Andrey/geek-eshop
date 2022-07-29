@@ -1,93 +1,50 @@
 package ru.geekbrains.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.controller.dto.AddLineItemDto;
-import ru.geekbrains.controller.dto.AllCartDto;
-import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.service.CartService;
-import ru.geekbrains.service.ProductService;
-import ru.geekbrains.service.dto.LineItem;
 
-import java.math.BigDecimal;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import ru.geekbrains.dto.AllCartDto;
+import ru.geekbrains.dto.CartItemDto;
+import ru.geekbrains.service.CartService;
+
 
 @RestController
 @RequestMapping("/cart")
+@Slf4j
 public class CartController {
 
-    private static Logger logger = LoggerFactory.getLogger(CartController.class);
-
-    private CartService cartService;
-
-    private final ProductService productService;
+    private final CartService cartService;
 
     @Autowired
-    public CartController(CartService cartService, ProductService productService) {
+    public CartController(CartService cartService) {
         this.cartService = cartService;
-        this.productService = productService;
     }
-
-    @PostMapping(produces = "application/json", consumes = "application/json")
-    public List<LineItem> addToCart(@RequestBody AddLineItemDto addLineItemDto) {
-        logger.info("New LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
-
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
-        cartService.addProductQty(productDto,
-                addLineItemDto.getColor(),
-                addLineItemDto.getMaterial(),
-                addLineItemDto.isSaveGiftWrap(),
-                addLineItemDto.isGiftWrap(),
-                addLineItemDto.getQty());
-
-        return cartService.getLineItems();
-    }
-
+    
     @GetMapping("/all")
-    public AllCartDto findAll() {
-        return new AllCartDto(cartService.getLineItems(), cartService.getSubTotal());
+    public AllCartDto getCart() {
+    	log.info("Load cart");
+    	return cartService.getCartDto();
     }
-
-    @PostMapping(path = "/update", produces = "application/json", consumes = "application/json")
-    public AllCartDto updateLineItem(@RequestBody AddLineItemDto addLineItemDto) {
-        logger.info("Updating LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
-
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
-
-        cartService.updateProductQty(productDto,
-                addLineItemDto.getColor(),
-                addLineItemDto.getMaterial(),
-                addLineItemDto.isSaveGiftWrap(),
-                addLineItemDto.isGiftWrap(),
-                addLineItemDto.getQty());
-
-        return new AllCartDto(cartService.getLineItems(), cartService.getSubTotal());
+    
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    public void addCartItem(@RequestBody CartItemDto cartItemDto) {
+    	cartService.addToCart(cartItemDto);
     }
-
-    @PostMapping(path = "/remove", produces = "application/json", consumes = "application/json")
-    public AllCartDto removeLineItem(@RequestBody AddLineItemDto addLineItemDto) {
-        logger.info("Deleting LineItem. ProductId={}, qty={}", addLineItemDto.getProductId(), addLineItemDto.getQty());
-
-        ProductDto productDto = productService.findById(addLineItemDto.getProductId());
-
-        cartService.removeProduct(productDto,
-                addLineItemDto.getColor(),
-                addLineItemDto.getMaterial(),
-                addLineItemDto.isSaveGiftWrap(),
-                addLineItemDto.isGiftWrap());
-
-        return new AllCartDto(cartService.getLineItems(), cartService.getSubTotal());
+    
+    @PutMapping(produces = "application/json", consumes = "application/json")
+    public AllCartDto updateCartItem(@RequestBody CartItemDto cartItemDto) {
+    	return cartService.updateCart(cartItemDto);
     }
-
-    @DeleteMapping
+    
+    @DeleteMapping("/all")
     public AllCartDto clear() {
-        logger.info("Clearing cart");
-
-        cartService.clear();
-
-        return new AllCartDto(cartService.getLineItems(), cartService.getSubTotal());
+    	return cartService.clear();
     }
+    
+    @DeleteMapping(produces = "application/json", consumes = "application/json")
+    public AllCartDto deleteCartItem(@RequestBody CartItemDto cartItemDto) {
+    	return cartService.deleteItem(cartItemDto);
+    }
+
 }

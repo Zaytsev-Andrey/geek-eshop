@@ -1,22 +1,23 @@
 package ru.geekbrains.service;
 
 import org.springframework.data.domain.Page;
-import ru.geekbrains.controller.dto.UserDto;
+import ru.geekbrains.dto.UserDto;
 import ru.geekbrains.controller.param.UserListParam;
-import ru.geekbrains.persist.model.User;
+import ru.geekbrains.persist.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 public interface UserService {
 
-    UserDto findUserById(Long id);
+    UserDto findUserById(UUID id);
 
     Optional<User> findUserByEmail(String email);
 
-    Page<User> findUsersWithFilter(UserListParam listParam);
+    Page<UserDto> findUsersWithFilter(UserListParam listParam);
 
     void saveUser(UserDto userDto);
 
-    void deleteUserById(Long id);
+    void deleteUserById(UUID id);
 }

@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import ru.geekbrains.controller.dto.BrandDto;
+import ru.geekbrains.dto.BrandDto;
 import ru.geekbrains.controller.param.BrandListParam;
 import ru.geekbrains.service.BrandService;
+
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -20,7 +22,7 @@ public class BrandController {
 
     private final Logger logger = LoggerFactory.getLogger(BrandController.class);
 
-    private BrandService brandService;
+    private final BrandService brandService;
 
     @Autowired
     public BrandController(BrandService brandService) {
@@ -30,7 +32,7 @@ public class BrandController {
     @GetMapping
     public String showBrandListWithPaginationAndFilter(Model model, BrandListParam listParam) {
         logger.info("Getting page of brands with filter");
-        model.addAttribute("brands", brandService.findBrandsWithFilter(listParam));
+        model.addAttribute("brandDtos", brandService.findBrandsWithFilter(listParam));
         return "brands";
     }
 
@@ -42,7 +44,7 @@ public class BrandController {
     }
 
     @GetMapping("/{id}")
-    public String initEditBrandForm(@PathVariable("id") Long id, Model model) {
+    public String initEditBrandForm(@PathVariable("id") UUID id, Model model) {
         logger.info("Editing brand with id='{}'", id);
         model.addAttribute("brandDto", brandService.findBrandById(id));
         return "brand_form";
@@ -59,7 +61,7 @@ public class BrandController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteBrand(@PathVariable("id") Long id) {
+    public String deleteBrand(@PathVariable("id") UUID id) {
         logger.info("Deleting brand with id='{}'", id);
         brandService.deleteBrandById(id);
         return "redirect:/brand";

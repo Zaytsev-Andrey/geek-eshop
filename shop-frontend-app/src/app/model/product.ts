@@ -3,12 +3,12 @@ import {Brand} from "./brand";
 
 export class Product {
 
-  constructor(public id: number,
+  constructor(public id: string,
               public title: string,
-              public cost: number,
+              public cost: string,
               public description: string,
               public category: Category,
               public brand: Brand,
-              public pictures: number[]) {
+              public pictures: string[]) {
   }
 }

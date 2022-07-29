@@ -1,11 +1,9 @@
 package ru.geekbrains.service;
 
-import javassist.NotFoundException;
-import ru.geekbrains.controller.dto.OrderDto;
-
-import java.util.List;
+import ru.geekbrains.persist.Order;
+import java.util.Set;
 
 public interface UserService {
 
-    List<OrderDto> getUserOrders(String email);
+    Set<Order> getUserOrders(String email);
 }

@@ -43,24 +43,26 @@
             <table class="table table-bordered my-2">
                 <thead>
                 <tr>
-                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col">#</th>
                     <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('Firstname', 'firstname')">Title</th>
                     <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('Lastname', 'lastname')">Title</th>
+                    <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('ID', 'id')">ID</th>
                     <th scope="col" th:replace="fragments/doc_user_sort :: sort_header('E-mail', 'email')">Title</th>
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${users.hasContent()}" th:each="user : ${users.content}">
-                    <th scope="row" th:text="${user.id}">1</th>
-                    <td th:text="${user.firstname}">firstname</td>
-                    <td th:text="${user.lastname}">lastname</td>
-                    <td th:text="${user.email}">email</td>
+                <tr th:if="${userDtos.hasContent()}" th:each="userDto,iter : ${userDtos.content}">
+                    <th scope="row" th:text="${iter.index + 1}">1</th>
+                    <td th:text="${userDto.firstname}">firstname</td>
+                    <td th:text="${userDto.lastname}">lastname</td>
+                    <td th:text="${userDto.id}">1</td>
+                    <td th:text="${userDto.email}">email</td>
                     <td>
-                        <a class="btn btn-success" th:href="@{/user/{id}(id=${user.id})}">
+                        <a class="btn btn-success" th:href="@{/user/{id}(id=${userDto.id})}">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form class="d-inline" th:method="delete" th:action="@{/user/{id}(id=${user.id})}">
+                        <form class="d-inline" th:method="delete" th:action="@{/user/{id}(id=${userDto.id})}">
                             <button type="submit" class="btn btn-danger">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -68,35 +70,35 @@
                     </td>
                 </tr>
 
-                <tr th:unless="${users.hasContent()}">
+                <tr th:unless="${userDtos.hasContent()}">
                     <td colspan="4">No data</td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <nav aria-label="..." th:if="${users.hasContent()}">
+        <nav aria-label="..." th:if="${userDtos.hasContent()}">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!users.hasPrevious()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/user(page=${users.number}, size=${users.size},
+                <li class="page-item" th:classappend="${!userDtos.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/user(page=${userDtos.number}, size=${userDtos.size},
                     firstnameFilter=${param.firstnameFilter}, lastnameFilter=${param.lastnameFilter},
                     emailFilter=${param.emailFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
                 </li>
 
                 <li class="page-item"
-                    th:each="num : ${#numbers.sequence(1, (users.totalPages == 0 ? 1 : users.totalPages))}"
-                    th:classappend="${num == users.number + 1} ? 'active'">
+                    th:each="num : ${#numbers.sequence(1, (userDtos.totalPages == 0 ? 1 : userDtos.totalPages))}"
+                    th:classappend="${num == userDtos.number + 1} ? 'active'">
                     <a class="page-link" th:text="${num}"
-                       th:href="@{/user(page=${users.totalPages == 0 ? 1 : num},
-                       size=${users.size}, firstnameFilter=${param.firstnameFilter},
+                       th:href="@{/user(page=${userDtos.totalPages == 0 ? 1 : num},
+                       size=${userDtos.size}, firstnameFilter=${param.firstnameFilter},
                        lastnameFilter=${param.lastnameFilter}, emailFilter=${param.emailFilter},
                        sortField=${param.sortField},
                        sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
                 </li>
 
-                <li class="page-item" th:classappend="${!users.hasNext()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/user(page=${users.number} + 2, size=${users.size},
+                <li class="page-item" th:classappend="${!userDtos.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/user(page=${userDtos.number} + 2, size=${userDtos.size},
                     firstnameFilter=${param.firstnameFilter}, lastnameFilter=${param.lastnameFilter},
                     emailFilter=${param.emailFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}">Next</a>

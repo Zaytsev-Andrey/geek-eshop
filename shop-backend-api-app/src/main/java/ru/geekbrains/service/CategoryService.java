@@ -1,8 +1,9 @@
 package ru.geekbrains.service;
 
-import ru.geekbrains.controller.dto.CategoryDto;
 
 import java.util.List;
+
+import ru.geekbrains.dto.CategoryDto;
 
 public interface CategoryService {
 

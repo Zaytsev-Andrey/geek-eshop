@@ -17,17 +17,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import ru.geekbrains.controller.dto.BrandDto;
-import ru.geekbrains.controller.dto.CategoryDto;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.model.Order;
-import ru.geekbrains.persist.repository.*;
+import ru.geekbrains.dto.BrandDto;
+import ru.geekbrains.dto.CategoryDto;
+import ru.geekbrains.dto.OrderDetailDto;
+import ru.geekbrains.dto.ProductDto;
+import ru.geekbrains.persist.*;
+import ru.geekbrains.persist.Order;
+import ru.geekbrains.repository.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -48,9 +47,6 @@ public class OrderControllerEditTest {
 
     @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -78,6 +74,18 @@ public class OrderControllerEditTest {
     private Category expectedCategory;
     private Brand expectedBrand;
 
+    private static final UUID categoryId = UUID.randomUUID();
+    private static final UUID brandId = UUID.randomUUID();
+    private static final UUID productId = UUID.randomUUID();
+    private static final UUID adminRoleId = UUID.randomUUID();
+    private static final UUID adminId = UUID.randomUUID();
+    private static final UUID userRoleId = UUID.randomUUID();
+    private static final UUID userId = UUID.randomUUID();
+    private static final UUID userOrderDetailId = UUID.randomUUID();
+    private static final UUID userOrderId = UUID.randomUUID();
+    private static final UUID adminOrderDetailId = UUID.randomUUID();
+    private static final UUID adminOrderId = UUID.randomUUID();
+
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders
@@ -85,10 +93,10 @@ public class OrderControllerEditTest {
                 .apply(springSecurity())
                 .build();
 
-        expectedCategory = categoryRepository.save(new Category(1L, "Monitor"));
-        expectedBrand = brandRepository.save(new Brand(1L, "LG"));
+        expectedCategory = categoryRepository.save(new Category(categoryId, "Monitor"));
+        expectedBrand = brandRepository.save(new Brand(brandId, "LG"));
         expectedProduct = productRepository.save(new Product(
-                1L,
+                productId,
                 "LG 27UP850",
                 new BigDecimal(500),
                 "4k Monitor",
@@ -96,42 +104,42 @@ public class OrderControllerEditTest {
                 expectedBrand
         ));
 
-        Role roleAdmin = roleRepository.save(new Role(1L, "ROLE_ADMIN"));
+        Role roleAdmin = roleRepository.save(new Role(adminRoleId, "ROLE_ADMIN"));
         User admin = userRepository.save(
-                new User(1L, "Admin", "Admin", "admin@mail.ru", "", List.of(roleAdmin))
+                new User(adminId, "Admin", "Admin", "admin@mail.ru", "", Set.of(roleAdmin))
         );
 
-        Role role = roleRepository.save(new Role(2L, "ROLE_USER"));
+        Role role = roleRepository.save(new Role(userRoleId, "ROLE_USER"));
         User user = userRepository.save(
-                new User(2L, "User", "User", "user@mail.ru", "", List.of(role))
+                new User(userId, "User", "User", "user@mail.ru", "", Set.of(role))
         );
 
-        OrderDetail orderDetailUser = new OrderDetail(1L, expectedProduct, 1, new BigDecimal(500), true, null);
-        Order orderUser = new Order(1L, null, new BigDecimal(500),
-                OrderStatus.CREATED, user, new ArrayList<>());
+        OrderDetail orderDetailUser = new OrderDetail(userOrderDetailId, expectedProduct, 1, new BigDecimal(500), true, null);
+        Order orderUser = new Order(userOrderId, null, new BigDecimal(500),
+                OrderStatus.CREATED, user, new HashSet<>());
         orderUser.addDetail(orderDetailUser);
 
         expectedOrder = orderRepository.save(orderUser);
 
-        OrderDetail orderDetailAdmin = new OrderDetail(2L, expectedProduct, 3, new BigDecimal(1500), true, null);
-        Order orderAdmin = new Order(2L, null, new BigDecimal(1500),
-                OrderStatus.CREATED, admin, new ArrayList<>());
+        OrderDetail orderDetailAdmin = new OrderDetail(adminOrderDetailId, expectedProduct, 3, new BigDecimal(1500), true, null);
+        Order orderAdmin = new Order(adminOrderId, null, new BigDecimal(1500),
+                OrderStatus.CREATED, admin, new HashSet<>());
         orderAdmin.addDetail(orderDetailAdmin);
         orderRepository.save(orderAdmin);
     }
 
     @Test
     @org.junit.jupiter.api.Order(1)
-    @WithMockUser(value = "user@mail.ru", password = "user", roles = {"USER"})
+    @WithMockUser(value = "user@mail.ru", password = "user")
     public void testEditOrderDetail() throws Exception {
-        OrderDetail orderDetail = expectedOrder.getOrderDetails().get(0);
+        OrderDetail orderDetail = expectedOrder.getOrderDetails().iterator().next();
         ProductDto productDto = createProductDto();
 
         OrderDetailDto orderDetailDto = new OrderDetailDto(
-                orderDetail.getId(),
+                orderDetail.getId().toString(),
                 productDto,
                 2,
-                new BigDecimal(1100),
+                "1100",
                 false
         );
 
@@ -148,15 +156,16 @@ public class OrderControllerEditTest {
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    @WithMockUser(value = "user@mail.ru", password = "user", roles = {"USER"})
+    @WithMockUser(value = "user@mail.ru", password = "user")
     public void testEditOrderDetailNotFound() throws Exception {
         ProductDto productDto = createProductDto();
+        String notFoundOrderDetailId = UUID.randomUUID().toString();
 
         OrderDetailDto orderDetailDto = new OrderDetailDto(
-                10L,
+                notFoundOrderDetailId,
                 productDto,
                 2,
-                new BigDecimal(1100),
+                "1100",
                 false
         );
 
@@ -167,15 +176,15 @@ public class OrderControllerEditTest {
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$",
-                        containsStringIgnoringCase("Order detail with id='10' not found")));
+                        containsStringIgnoringCase("Order detail with id='" + notFoundOrderDetailId + "' not found")));
     }
 
     @Test
     @org.junit.jupiter.api.Order(10)
-    @WithMockUser(value = "user@mail.ru", password = "user", roles = {"USER"})
+    @WithMockUser(value = "user@mail.ru", password = "user")
     public void testRemoveOrderDetail() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/order/detail/1")
+                        .delete("/order/detail/" + userOrderDetailId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -184,23 +193,25 @@ public class OrderControllerEditTest {
 
     @Test
     @org.junit.jupiter.api.Order(11)
-    @WithMockUser(value = "user@mail.ru", password = "user", roles = {"USER"})
+    @WithMockUser(value = "user@mail.ru", password = "user")
     public void testRemoveOrderDetailNotFound() throws Exception {
+        String notFoundOrderDetailId = UUID.randomUUID().toString();
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/order/detail/10")
+                        .delete("/order/detail/" + notFoundOrderDetailId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$",
-                        containsStringIgnoringCase("Order detail with id='10' not found")));
+                        containsStringIgnoringCase("Order detail with id='" + notFoundOrderDetailId + "' not found")));
     }
 
     @Test
     @org.junit.jupiter.api.Order(60)
-    @WithMockUser(value = "user@mail.ru", password = "user", roles = {"USER"})
+    @WithMockUser(value = "user@mail.ru", password = "user")
     public void testRemoveOrder() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/order/1")
+                        .delete("/order/" + userOrderId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -213,13 +224,13 @@ public class OrderControllerEditTest {
 
     private ProductDto createProductDto() {
         return new ProductDto(
-                expectedProduct.getId(),
+                expectedProduct.getId().toString(),
                 expectedProduct.getTitle(),
-                new BigDecimal(550),
+                "550",
                 expectedProduct.getDescription(),
-                new CategoryDto(expectedCategory.getId(), expectedCategory.getTitle()),
-                new BrandDto(expectedBrand.getId(), expectedBrand.getTitle()),
-                new ArrayList<>()
+                new CategoryDto(expectedCategory.getId().toString(), expectedCategory.getTitle()),
+                new BrandDto(expectedBrand.getId().toString(), expectedBrand.getTitle()),
+                new HashSet<>()
         );
     }
 }

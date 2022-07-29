@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Product} from "../../model/product";
 import {CartService} from "../../services/cart.service";
-import {AddLineItemDto} from "../../model/add-line-item-dto";
+import {LineItemDto} from "../../model/line-item-dto";
 
 @Component({
   selector: 'app-product-gallery',
@@ -17,8 +17,8 @@ export class ProductGalleryComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  addToCart(id: number) {
-    this.cartService.addToCart(new AddLineItemDto(id, "", "", false, false, 1))
+  addToCart(id: string) {
+    this.cartService.addToCart(new LineItemDto(id, false, false, 1))
       .subscribe();
   }
 }

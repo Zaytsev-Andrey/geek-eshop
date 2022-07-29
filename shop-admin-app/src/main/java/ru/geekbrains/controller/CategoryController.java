@@ -7,9 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.controller.dto.CategoryDto;
+import ru.geekbrains.dto.CategoryDto;
 import ru.geekbrains.controller.param.CategoryListParam;
 import ru.geekbrains.service.CategoryService;
+
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -19,7 +21,7 @@ public class CategoryController {
 
     private final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Autowired
     public CategoryController(CategoryService categoryService) {
@@ -29,7 +31,7 @@ public class CategoryController {
     @GetMapping
     public String showCategoryListWithPaginationAndFilter(Model model, CategoryListParam listParam) {
         logger.info("Getting page of categories with filter");
-        model.addAttribute("categories", categoryService.findCategoryWithFilter(listParam));
+        model.addAttribute("categoryDtos", categoryService.findCategoryWithFilter(listParam));
         return "categories";
     }
 
@@ -41,7 +43,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public String intEditCategoryForm(@PathVariable("id") Long id, Model model) {
+    public String intEditCategoryForm(@PathVariable("id") UUID id, Model model) {
         logger.info("Editing category with id='{}'", id);
         model.addAttribute("categoryDto", categoryService.findCategoryById(id));
         return "category_form";
@@ -58,7 +60,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCategory(@PathVariable("id") Long id) {
+    public String deleteCategory(@PathVariable("id") UUID id) {
         logger.info("Deleting category with id='{}'", id);
         categoryService.deleteCategoryById(id);
         return "redirect:/category";

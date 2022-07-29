@@ -7,14 +7,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.controller.dto.RoleDto;
-import ru.geekbrains.controller.dto.UserDto;
+import ru.geekbrains.dto.RoleDto;
+import ru.geekbrains.dto.UserDto;
 import ru.geekbrains.controller.param.UserListParam;
+import ru.geekbrains.persist.User;
 import ru.geekbrains.service.RoleService;
 import ru.geekbrains.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -22,9 +25,9 @@ public class UserController {
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    private UserService userService;
+    private final UserService userService;
 
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService) {
@@ -45,7 +48,7 @@ public class UserController {
     @GetMapping
     public String showUserListWithPaginationAndFilter(Model model, UserListParam userListParams) {
         logger.info("Getting page of users with filter");
-        model.addAttribute("users", userService.findUsersWithFilter(userListParams));
+        model.addAttribute("userDtos", userService.findUsersWithFilter(userListParams));
         return "users";
     }
 
@@ -57,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public String initEditUserForm(@PathVariable("id") Long id, Model model) {
+    public String initEditUserForm(@PathVariable("id") UUID id, Model model) {
         logger.info("Editing user with id='{}'", id);
         model.addAttribute("userDto", userService.findUserById(id));
         return "user_form";
@@ -70,14 +73,18 @@ public class UserController {
         // if password not equals confirm password
         boolean passwordError = !userDto.getPassword().equals(userDto.getConfirmPassword());
         // if E-mail already exist
-        boolean emailError = userService.findUserByEmail(userDto.getEmail()).isPresent();
+        boolean emailError = false;
+        Optional<User> existUser = userService.findUserByEmail(userDto.getEmail());
+        if (existUser.isPresent() && !existUser.get().getId().toString().equals(userDto.getId())) {
+            emailError = true;
+        }
 
-        if (result.hasErrors() || passwordError || emailError) {
+        if (result.hasErrors() || passwordError || emailError && userDto.getId().isBlank()) {
             if (passwordError) {
                 result.rejectValue("password", "",
                         "Password and confirm password are not equals");
             }
-            if (emailError) {
+            if (emailError && userDto.getId().isBlank()) {
                 result.rejectValue("email", "", String.format("User with E-mail: %s already exists",
                         userDto.getEmail()));
             }
@@ -90,7 +97,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    public String deleteUser(@PathVariable("id") UUID id) {
         logger.info("Deleting user with id='{}'", id);
         userService.deleteUserById(id);
         return "redirect:/user";

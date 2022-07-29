@@ -3,13 +3,14 @@ package ru.geekbrains.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.controller.dto.BrandDto;
-import ru.geekbrains.controller.dto.CategoryDto;
-import ru.geekbrains.controller.dto.ProductDto;
+import ru.geekbrains.dto.BrandDto;
+import ru.geekbrains.dto.CategoryDto;
+import ru.geekbrains.dto.ProductDto;
 import ru.geekbrains.controller.param.ProductListParam;
 import ru.geekbrains.service.BrandService;
 import ru.geekbrains.service.CategoryService;
@@ -17,6 +18,7 @@ import ru.geekbrains.service.ProductService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/product")
@@ -24,11 +26,11 @@ public class ProductController {
 
     private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    private ProductService productService;
+    private final ProductService productService;
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
-    private BrandService brandService;
+    private final BrandService brandService;
 
     @Autowired
     public ProductController(ProductService productService,
@@ -62,7 +64,8 @@ public class ProductController {
     @GetMapping
     public String showProductListWithPaginationAndFilter(Model model, ProductListParam listParam) {
         logger.info("Getting page of products with filter");
-        model.addAttribute("products", productService.findProductsWithFilter(listParam));
+        Page<ProductDto> productDtos = productService.findProductsWithFilter(listParam);
+        model.addAttribute("productDtos", productDtos);
         return "products";
     }
 
@@ -74,7 +77,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public String initEditProductForm(@PathVariable("id") Long id, Model model) {
+    public String initEditProductForm(@PathVariable("id") UUID id, Model model) {
         logger.info("Editing product with id='{}'", id);
         model.addAttribute("productDto", productService.findProductById(id));
         return "product_form";
@@ -91,7 +94,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable("id") Long id) {
+    public String deleteProduct(@PathVariable("id") UUID id) {
         logger.info("Deleting product with id='{}'", id);
         productService.deleteProductById(id);
         return "redirect:/product";

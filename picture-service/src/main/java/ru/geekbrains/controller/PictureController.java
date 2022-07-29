@@ -13,6 +13,7 @@ import ru.geekbrains.service.PictureService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/picture")
@@ -20,7 +21,7 @@ public class PictureController {
 
     private final Logger logger = LoggerFactory.getLogger(PictureController.class);
 
-    private PictureService pictureService;
+    private final PictureService pictureService;
 
     @Autowired
     public PictureController(PictureService pictureService) {
@@ -28,7 +29,7 @@ public class PictureController {
     }
 
     @GetMapping("/{pictureId}")
-    public void downloadPicture(@PathVariable("pictureId") Long pictureId,
+    public void downloadPicture(@PathVariable("pictureId") UUID pictureId,
                                 HttpServletResponse response) throws IOException {
         logger.info("Downloading picture with id='{}'", pictureId);
         Optional<String> opt = pictureService.getPictureContentTypeById(pictureId);
@@ -43,10 +44,10 @@ public class PictureController {
     }
 
     @DeleteMapping("/{productId}/{pictureId}")
-    public String deletePicture(@PathVariable("productId") Long productID,
-                                @PathVariable("pictureId") Long pictureId) {
+    public String deletePicture(@PathVariable("productId") UUID productID,
+                                @PathVariable("pictureId") UUID pictureId) {
         logger.info("Deleting picture with id='{}'", pictureId);
         pictureService.deletePictureById(pictureId);
-        return "redirect:/product/" + productID;
+        return "redirect:/product" + productID;
     }
 }

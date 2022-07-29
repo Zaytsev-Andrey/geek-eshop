@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderMessage {
 
-    private Long id;
+    private String id;
 
     private String status;
 }

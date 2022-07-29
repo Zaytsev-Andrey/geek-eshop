@@ -8,20 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.ProductDto;
+
+import ru.geekbrains.dto.OrderDetailDto;
+import ru.geekbrains.dto.OrderDto;
 import ru.geekbrains.exception.OrderDetailNotFoundException;
 import ru.geekbrains.exception.OrderNotFoundException;
 import ru.geekbrains.exception.UserNotFoundException;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.repository.OrderDetailRepository;
-import ru.geekbrains.persist.repository.OrderRepository;
-import ru.geekbrains.persist.repository.UserRepository;
-import ru.geekbrains.service.dto.LineItem;
+import ru.geekbrains.mapper.Mapper;
+import ru.geekbrains.persist.*;
+import ru.geekbrains.repository.OrderDetailRepository;
+import ru.geekbrains.repository.OrderRepository;
+import ru.geekbrains.repository.UserRepository;
 import ru.geekbrains.service.dto.OrderMessage;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,84 +30,105 @@ public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private OrderDetailRepository orderDetailRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    
+    private final UserService userService;
+    
+    private final CartService cartService;
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    private SimpMessagingTemplate webSocketTemplate;
+    private final SimpMessagingTemplate webSocketTemplate;
+
+    private final Mapper<Order, OrderDto> orderMapper;
+
+    private final Mapper<OrderDetail, OrderDetailDto> orderDetailMapper;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
+                            UserService userService,
+                            CartService cartService,
                             RabbitTemplate rabbitTemplate,
-                            SimpMessagingTemplate webSocketTemplate) {
+                            SimpMessagingTemplate webSocketTemplate,
+                            Mapper<Order, OrderDto> orderMapper,
+                            Mapper<OrderDetail, OrderDetailDto> orderDetailMapper) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDetailRepository = orderDetailRepository;
+        this.userService = userService;
+        this.cartService = cartService;
         this.rabbitTemplate = rabbitTemplate;
         this.webSocketTemplate = webSocketTemplate;
+        this.orderMapper = orderMapper;
+        this.orderDetailMapper = orderDetailMapper;
     }
 
     @Override
-    public List<OrderDetailDto> getOrderDetails(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException(id));
+    public List<OrderDto> getOrders(String username) {
+        return userService.getUserOrders(username).stream()
+                .map(orderMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
-        List<OrderDetailDto> result =  order.getOrderDetails().stream()
-                .map(detail -> new OrderDetailDto(
-                        detail.getId(),
-                        new ProductDto(
-                                detail.getProduct().getId(),
-                                detail.getProduct().getTitle(),
-                                detail.getProduct().getCost(),
-                                detail.getProduct().getDescription()
-                        ),
-                        detail.getCount(),
-                        detail.getCost(),
-                        detail.getGiftWrap()
-                )).collect(Collectors.toList());
-
-        return result;
+    @Override
+    public List<OrderDetailDto> getOrderDetails(UUID id) {
+        Optional<Order> order = orderRepository.findById(id);
+        return order
+                .orElseThrow(() -> new OrderNotFoundException(id))
+                .getOrderDetails().stream()
+                .map(orderDetailMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public void save(List<LineItem> lineItems, BigDecimal total, String email) {
-        Order order = new Order(total,
-                OrderStatus.CREATED,
-                userRepository.findByEmail(email)
-                        .orElseThrow(() -> new UserNotFoundException(email)));
+    public void save(String email) {
+    	if (cartService.isEmpty()) {
+            return;
+    	}
 
-        lineItems.forEach(lineItem -> {
-            ProductDto productDto = lineItem.getProductDto();
-            Product product = new Product(
-                    productDto.getId(),
-                    productDto.getTitle(),
-                    productDto.getCost(),
-                    productDto.getDescription(),
-                    new Category(productDto.getCategoryDto().getId(), productDto.getCategoryDto().getTitle()),
-                    new Brand(productDto.getBrandDto().getId(), productDto.getBrandDto().getTitle())
-            );
-            OrderDetail orderDetail = new OrderDetail(product,
-                    lineItem.getQty(),
-                    lineItem.getItemTotal(),
-                    lineItem.getGiftWrap());
+        List<CartItem> cartItems = cartService.getCartItems();
+        Map<UUID, Product> products = cartService.getCartProducts(cartItems);
+        Set<OrderDetail> orderDetails = createOrderDetails(cartItems, products);
+        Order order = createOrderFromOrderDetails(orderDetails, email);
 
-            order.addDetail(orderDetail);
-        });
-
+        orderDetails.forEach(order::addDetail);
         orderRepository.save(order);
+        cartService.clear();
 
         rabbitTemplate.convertAndSend("order.exchange", "new_order",
-                new OrderMessage(order.getId(), order.getStatus().getName()));
+                new OrderMessage(order.getId().toString(), order.getStatus().getName()));
     }
 
-    private Order changeOrderStatus(Long orderId, String newStatus) {
+    private Order createOrderFromOrderDetails(Set<OrderDetail> orderDetails, String email) {
+        return new Order(
+                orderDetails.stream()
+                        .map(detail -> detail.getCost().multiply(new BigDecimal(detail.getQty())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add),
+                OrderStatus.CREATED,
+                userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UserNotFoundException(email))
+        );
+    }
+
+    private Set<OrderDetail> createOrderDetails(List<CartItem> cartItems, Map<UUID, Product> products) {
+        return cartItems.stream()
+                .map(cartItem -> new OrderDetail(
+                        products.get(cartItem.getId()),
+                        cartItem.getQty(),
+                        products.get(cartItem.getId()).getCost(),
+                        cartItem.getGiftWrap()
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    private Order changeOrderStatus(UUID orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
@@ -116,25 +138,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void removeOrder(Long id) {
+    public void removeOrder(UUID id) {
         orderRepository.deleteById(id);
     }
 
     @Transactional
     @Override
-    public Order editOrderDetail(OrderDetailDto orderDetailDto) {
-        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailDto.getId())
-                .orElseThrow(() -> new OrderDetailNotFoundException(orderDetailDto.getId()));
+    public List<OrderDetailDto> editOrderDetail(OrderDetailDto orderDetailDto) {
+    	OrderDetail orderDetail = orderDetailRepository.findById(UUID.fromString(orderDetailDto.getId()))
+                .orElseThrow(() -> new OrderDetailNotFoundException(UUID.fromString(orderDetailDto.getId())));
 
-        orderDetail.setCount(orderDetailDto.getQty());
-        orderDetail.setCost(orderDetailDto.getProductDto().getCost()
+        orderDetail.setQty(orderDetailDto.getQty());
+        orderDetail.setCost(new BigDecimal(orderDetailDto.getProductDto().getCost()) 
                 .multiply(new BigDecimal(orderDetailDto.getQty())));
         orderDetail.setGiftWrap(orderDetailDto.getGiftWrap());
 
         Order order = orderDetail.getOrder();
         updateOrderTotal(order);
 
-        return order;
+        return getOrderDetails(order.getId());
     }
 
     private void updateOrderTotal(Order order) {
@@ -144,13 +166,11 @@ public class OrderServiceImpl implements OrderService {
 
         order.setPrice(total);
         order.setStatus(OrderStatus.MODIFIED);
-
-//        orderRepository.save(order);
     }
 
     @Transactional
     @Override
-    public Order removeOrderDetail(Long id) {
+    public Order removeOrderDetail(UUID id) {
 
         Order order = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new OrderDetailNotFoundException(id))
@@ -168,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
     public void receive(OrderMessage orderMessage) {
         logger.info("Order with id '{}' state change to '{}'", orderMessage.getId(), orderMessage.getStatus());
 
-        Order order = changeOrderStatus(orderMessage.getId(), orderMessage.getStatus());
+        Order order = changeOrderStatus(UUID.fromString(orderMessage.getId()), orderMessage.getStatus());
         orderMessage.setStatus(order.getStatus().getName());
 
         webSocketTemplate.convertAndSend("/order_out/order", orderMessage);

@@ -2,10 +2,10 @@ import {Product} from "./product";
 
 export class OrderDetail {
 
-  constructor(public id: number,
+  constructor(public id: string,
               public productDto: Product,
               public qty: number,
-              public cost: number,
+              public cost: string,
               public giftWrap: boolean) {
   }
 }

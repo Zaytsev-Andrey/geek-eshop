@@ -13,12 +13,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import ru.geekbrains.persist.model.Role;
-import ru.geekbrains.persist.model.User;
-import ru.geekbrains.persist.repository.RoleRepository;
-import ru.geekbrains.persist.repository.UserRepository;
+import ru.geekbrains.persist.Role;
+import ru.geekbrains.persist.User;
+import ru.geekbrains.repository.RoleRepository;
+import ru.geekbrains.repository.UserRepository;
 
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
@@ -45,6 +46,14 @@ public class LoginResourceTest {
     @MockBean
     private SimpMessagingTemplate webSocketTemplate;
 
+    private static final UUID adminId = UUID.randomUUID();
+
+    private static final UUID userId = UUID.randomUUID();
+
+    private static final UUID adminRoleId = UUID.randomUUID();
+
+    private static final UUID userRoleId = UUID.randomUUID();
+
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders
@@ -52,21 +61,21 @@ public class LoginResourceTest {
                 .apply(springSecurity())
                 .build();
 
-        userRepository.save(new User(1L,
+        userRepository.save(new User(adminId,
                 "Admin",
                 "Admin",
                 "admin@mail.ru",
                 "$2a$12$Nu0r.voTxDTA4ixldRI0P.RxkKdHcK4AUsKXu7rqSEOoPvREKjtaS",
-                List.of(
-                        roleRepository.save(new Role(1L, "ROLE_ADMIN"))
+                Set.of(
+                        roleRepository.save(new Role(adminRoleId, "ROLE_ADMIN"))
                 )));
-        userRepository.save(new User(2L,
+        userRepository.save(new User(userId,
                 "User",
                 "User",
                 "user@mail.ru",
                 "$2a$12$EHV5GGgrnVF8WTvdDR06kukY9/9UoH5qDWNI0y4B3eZvRggu0BhZm",
-                List.of(
-                        roleRepository.save(new Role(2L, "ROLE_USER"))
+                Set.of(
+                        roleRepository.save(new Role(userRoleId, "ROLE_USER"))
                 )));
     }
 

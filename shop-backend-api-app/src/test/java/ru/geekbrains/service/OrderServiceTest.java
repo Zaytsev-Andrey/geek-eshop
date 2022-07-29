@@ -2,21 +2,24 @@ package ru.geekbrains.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import ru.geekbrains.controller.dto.OrderDetailDto;
-import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.persist.model.*;
-import ru.geekbrains.persist.repository.OrderDetailRepository;
-import ru.geekbrains.persist.repository.OrderRepository;
-import ru.geekbrains.persist.repository.UserRepository;
-import ru.geekbrains.service.dto.LineItem;
+import ru.geekbrains.dto.*;
+import ru.geekbrains.mapper.IdUUIDMapper;
+import ru.geekbrains.mapper.OrderDetailMapper;
+import ru.geekbrains.mapper.ProductMapper;
+import ru.geekbrains.persist.*;
+import ru.geekbrains.repository.OrderDetailRepository;
+import ru.geekbrains.repository.OrderRepository;
+import ru.geekbrains.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -31,8 +34,6 @@ public class OrderServiceTest {
 
     private OrderRepository orderRepository;
 
-    private UserRepository userRepository;
-
     private OrderDetailRepository orderDetailRepository;
 
     @MockBean
@@ -44,19 +45,42 @@ public class OrderServiceTest {
     @BeforeEach
     public void init() {
         orderRepository = mock(OrderRepository.class);
-        userRepository = mock(UserRepository.class);
+        UserRepository userRepository = mock(UserRepository.class);
         orderDetailRepository = mock(OrderDetailRepository.class);
+        UserService userService = mock(UserService.class);
+        CartService cartService = mock(CartService.class);
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        IdUUIDMapper<Category, CategoryDto> categoryMapper =
+                new IdUUIDMapper<>(modelMapper, Category.class, CategoryDto.class);
+        categoryMapper.initMapper();
+        IdUUIDMapper<Brand, BrandDto> brandMapper = new IdUUIDMapper<>(modelMapper, Brand.class, BrandDto.class);
+        brandMapper.initMapper();
+        ProductMapper<Product, ProductDto> productMapper =
+                new ProductMapper<>(modelMapper, Product.class, ProductDto.class, brandMapper, categoryMapper);
+        productMapper.initMapper();
+        IdUUIDMapper<Order, OrderDto> orderMapper = new IdUUIDMapper<>(modelMapper, Order.class, OrderDto.class);
+        orderMapper.initMapper();
+        OrderDetailMapper<OrderDetail, OrderDetailDto> orderDetailMapper =
+                new OrderDetailMapper<>(modelMapper, OrderDetail.class, OrderDetailDto.class, productMapper);
+        orderDetailMapper.initMapper();
+
         orderService = new OrderServiceImpl(orderRepository,
                 userRepository,
                 orderDetailRepository,
+                userService,
+                cartService,
                 rabbitTemplate,
-                messagingTemplate);
+                messagingTemplate,
+                orderMapper,
+                orderDetailMapper);
     }
 
     @Test
     public void testGetOrderDetails() {
         Order expectedOrder = getExpectedOrder();
-        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().get(0);
+        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().iterator().next();
 
         when(orderRepository.findById(eq(expectedOrder.getId())))
                 .thenReturn(Optional.of(expectedOrder));
@@ -66,44 +90,48 @@ public class OrderServiceTest {
         assertNotNull(dtoOrderDetails);
         assertEquals(1, dtoOrderDetails.size());
         OrderDetailDto orderDetailDto = dtoOrderDetails.get(0);
-        assertEquals(expectedOrderDetail.getProduct().getId(), orderDetailDto.getProductDto().getId());
-        assertEquals(expectedOrderDetail.getCount(), orderDetailDto.getQty());
-        assertEquals(expectedOrderDetail.getCost(), orderDetailDto.getCost());
+        assertEquals(expectedOrderDetail.getProduct().getId().toString(), orderDetailDto.getProductDto().getId());
+        assertEquals(expectedOrderDetail.getQty(), orderDetailDto.getQty());
+        assertEquals(expectedOrderDetail.getCost().toString(), orderDetailDto.getCost());
         assertFalse(orderDetailDto.getGiftWrap());
     }
 
     @Test
     public void testEditOrderDetail() {
         Order expectedOrder = getExpectedOrder();
-        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().get(0);
+        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().iterator().next();
+        expectedOrderDetail.setQty(2);
 
         when(orderDetailRepository.findById(eq(expectedOrderDetail.getId())))
                 .thenReturn(Optional.of(expectedOrderDetail));
 
+        when(orderRepository.findById(eq(expectedOrder.getId())))
+                .thenReturn(Optional.of(expectedOrder));
+
         ProductDto productDto = new ProductDto();
-        productDto.setId(1L);
-        productDto.setCost(new BigDecimal(500));
+        productDto.setId(expectedOrder.getId().toString());
+        productDto.setCost("500");
 
         OrderDetailDto orderDetailDto = new OrderDetailDto();
-        orderDetailDto.setId(1L);
+        orderDetailDto.setId(expectedOrderDetail.getId().toString());
         orderDetailDto.setProductDto(productDto);
         orderDetailDto.setQty(2);
         orderDetailDto.setGiftWrap(true);
 
-        Order editedOrder = orderService.editOrderDetail(orderDetailDto);
-        assertNotNull(editedOrder.getOrderDetails());
-        assertEquals(1, editedOrder.getOrderDetails().size());
-        OrderDetail editedOrderDetail = editedOrder.getOrderDetails().get(0);
+        List<OrderDetailDto> editedOrderDetailDtos = orderService.editOrderDetail(orderDetailDto);
+        assertNotNull(editedOrderDetailDtos);
+        assertEquals(1, editedOrderDetailDtos.size());
+        OrderDetailDto editedOrderDetailDto = editedOrderDetailDtos.get(0);
 
-        assertEquals(2, editedOrderDetail.getCount());
-        assertTrue(editedOrderDetail.getGiftWrap());
-        assertEquals(new BigDecimal(1000), editedOrder.getPrice());
+        assertEquals(2, editedOrderDetailDto.getQty());
+        assertTrue(editedOrderDetailDto.getGiftWrap());
+        assertEquals(new BigDecimal(1000).toString(), editedOrderDetailDto.getCost());
     }
 
     @Test
     public void testRemoveOrderDetail() {
         Order expectedOrder = getExpectedOrder();
-        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().get(0);
+        OrderDetail expectedOrderDetail = expectedOrder.getOrderDetails().iterator().next();
 
         when(orderDetailRepository.findById(eq(expectedOrderDetail.getId())))
                 .thenReturn(Optional.of(expectedOrderDetail));
@@ -115,22 +143,24 @@ public class OrderServiceTest {
     }
 
     private Order getExpectedOrder() {
-        Product expectedProduct = new Product();
-        expectedProduct.setId(1L);
-        expectedProduct.setTitle("LG 27UP850");
-        expectedProduct.setCost(new BigDecimal(500));
-        expectedProduct.setDescription("4k Monitor");
-        expectedProduct.setCategory(new Category(1L, "Monitor"));
-        expectedProduct.setBrand(new Brand(1L, "LG"));
+        Product expectedProduct = new Product(
+                UUID.randomUUID(),
+                "LG 27UP850",
+                new BigDecimal(500),
+                "4k Monitor",
+                new Category("Monitor"),
+                new Brand("LG")
+        );
+
         OrderDetail expectedOrderDetail = new OrderDetail();
-        expectedOrderDetail.setId(1L);
+        expectedOrderDetail.setId(UUID.randomUUID());
         expectedOrderDetail.setProduct(expectedProduct);
-        expectedOrderDetail.setCount(1);
+        expectedOrderDetail.setQty(1);
         expectedOrderDetail.setCost(new BigDecimal(500));
         expectedOrderDetail.setGiftWrap(false);
 
         Order expectedOrder = new Order();
-        expectedOrder.setId(1L);
+        expectedOrder.setId(UUID.randomUUID());
         expectedOrder.setPrice(new BigDecimal(500));
         expectedOrder.setStatus(OrderStatus.CREATED);
         expectedOrder.setUser(new User());

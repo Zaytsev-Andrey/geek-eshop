@@ -35,18 +35,20 @@
             <table class="table table-bordered my-2">
                 <thead>
                 <tr>
-                    <th scope="col" th:replace="fragments/doc_brand_sort :: sort_header('ID', 'id')">ID</th>
+                    <th scope="col">#</th>
                     <th scope="col" th:replace="fragments/doc_brand_sort :: sort_header('Title', 'title')">Title</th>
+                    <th scope="col" th:replace="fragments/doc_brand_sort :: sort_header('ID', 'id')">ID</th>
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${brands.hasContent()}" th:each="brand : ${brands.content}">
-                    <th scope="row" th:text="${brand.id}">1</th>
-                    <td th:text="${brand.title}">title</td>
+                <tr th:if="${brandDtos.hasContent()}" th:each="brandDto,iter : ${brandDtos.content}">
+                    <th scope="row" th:text="${iter.index + 1}">1</th>
+                    <td th:text="${brandDto.title}">title</td>
+                    <td th:text="${brandDto.id}">1</td>
                     <td>
-                        <a class="btn btn-success" th:href="@{/brand/{id}(id=${brand.id})}"><i class="fas fa-edit"></i></a>
-                        <form class="d-inline" th:method="delete" th:action="@{/brand/{id}(id=${brand.id})}">
+                        <a class="btn btn-success" th:href="@{/brand/{id}(id=${brandDto.id})}"><i class="fas fa-edit"></i></a>
+                        <form class="d-inline" th:method="delete" th:action="@{/brand/{id}(id=${brandDto.id})}">
                             <button type="submit" class="btn btn-danger">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -54,32 +56,32 @@
                     </td>
                 </tr>
 
-                <tr th:unless="${brands.hasContent()}">
+                <tr th:unless="${brandDtos.hasContent()}">
                     <td colspan="4">No data</td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <nav aria-label="..." th:if="${brands.hasContent()}">
+        <nav aria-label="..." th:if="${brandDtos.hasContent()}">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!brands.hasPrevious()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/brand(page=${brands.number}, size=${brands.size},
+                <li class="page-item" th:classappend="${!brandDtos.hasPrevious()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/brand(page=${brandDtos.number}, size=${brandDtos.size},
                     titleFilter=${param.titleFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}" tabindex="-1">Previous</a>
                 </li>
 
                 <li class="page-item"
-                    th:each="num : ${#numbers.sequence(1, (brands.totalPages == 0 ? 1 : brands.totalPages))}"
-                    th:classappend="${num == brands.number + 1} ? 'active'">
+                    th:each="num : ${#numbers.sequence(1, (brandDtos.totalPages == 0 ? 1 : brandDtos.totalPages))}"
+                    th:classappend="${num == brandDtos.number + 1} ? 'active'">
                     <a class="page-link" th:text="${num}"
-                       th:href="@{/brand(page=${brands.totalPages == 0 ? 1 : num},
-                       size=${brands.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
+                       th:href="@{/brand(page=${brandDtos.totalPages == 0 ? 1 : num},
+                       size=${brandDtos.size}, titleFilter=${param.titleFilter}, sortField=${param.sortField},
                        sortDirection=${param.sortDirection})}">1 <span class="sr-only">(current)</span></a>
                 </li>
 
-                <li class="page-item" th:classappend="${!brands.hasNext()} ? 'disabled'">
-                    <a class="page-link" th:href="@{/brand(page=${brands.number} + 2, size=${brands.size},
+                <li class="page-item" th:classappend="${!brandDtos.hasNext()} ? 'disabled'">
+                    <a class="page-link" th:href="@{/brand(page=${brandDtos.number} + 2, size=${brandDtos.size},
                     titleFilter=${param.titleFilter}, sortField=${param.sortField},
                     sortDirection=${param.sortDirection})}">Next</a>
                 </li>
